@@ -23,6 +23,9 @@
         tr {
             cursor: pointer; /* Cambia el cursor al pasar sobre las filas */
         }
+        td {
+            text-align: center; /* Centrar el texto en las celdas */
+        }
     </style>
 </head>
 <body>
@@ -45,7 +48,15 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="place">Place</label>
-                        <input type="text" class="form-control" id="place" required>
+                        <select class="form-control" id="place" required>
+                            <option value="">Selecciona un lugar</option>
+                            <option value="El Patio">El Patio</option>
+                            <option value="Bluewater Grill">Bluewater Grill</option>
+                            <option value="Bordeaux">Bordeaux</option>
+                            <option value="Himitsu">Himitsu</option>
+                            <option value="Hibachi">Hibachi</option>
+                            <option value="Olio">Olio</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-row">
@@ -76,8 +87,8 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
                         <th>Room</th>
+                        <th>Name</th>
                         <th>Place</th>
                         <th>Time</th>
                         <th>Pax</th>
@@ -176,8 +187,8 @@
             const reserva = childSnapshot.val();
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${reserva.name}</td>
                 <td>${reserva.room}</td>
+                <td>${reserva.name}</td>
                 <td>${reserva.place}</td>
                 <td>${reserva.time}</td>
                 <td>${reserva.pax}</td>
