@@ -46,15 +46,19 @@
             <h5 class="card-title">Agregar Reserva</h5>
             <form id="reservaForm">
                 <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-2">
+                        <label for="fecha">Fecha</label>
+                        <input type="text" class="form-control" id="fecha" placeholder="DD/MM/YY" required>
+                    </div>
+                    <div class="form-group col-md-2">
                         <label for="room">Room</label>
                         <input type="number" class="form-control" id="room" min="1000" max="9999" required>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" required>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="place">Place</label>
                         <select class="form-control" id="place" required>
                             <option value="">Selecciona un lugar</option>
@@ -68,17 +72,17 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="time">Time</label>
                         <select class="form-control" id="time" required>
                             <option value="">Selecciona una hora</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="pax">Pax</label>
                         <input type="number" class="form-control" id="pax" required>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="notes">Notes</label>
                         <textarea class="form-control" id="notes" rows="1"></textarea>
                     </div>
@@ -97,6 +101,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Fecha</th>
                         <th>Room</th>
                         <th>Name</th>
                         <th>Place</th>
@@ -156,6 +161,7 @@
     const searchInput = document.getElementById('searchInput');
     const placeSelect = document.getElementById('place');
     const timeSelect = document.getElementById('time');
+    const fechaInput = document.getElementById('fecha');
 
     placeSelect.addEventListener('change', () => {
         const selectedPlace = placeSelect.value;
@@ -191,6 +197,7 @@
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+        const fecha = fechaInput.value;
         const room = document.getElementById('room').value;
         const name = document.getElementById('name').value;
         const place = document.getElementById('place').value;
@@ -198,32 +205,15 @@
         const pax = document.getElementById('pax').value;
         const notes = document.getElementById('notes').value;
 
-        agregarReserva({ room, name, place, time, pax, notes });
+        agregarReserva({ fecha, room, name, place, time, pax, notes });
         form.reset();
         timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Reiniciar el campo de tiempo
+        fechaInput.value = ''; // Reiniciar el campo de fecha
     });
 
     function agregarReserva(reserva) {
-        push(ref(db, 'reservas/'), reserva)
-            .then(() => {
-                mostrarModalReservaAgregada(reserva);
-            })
-            .catch((error) => {
-                console.error("Error al agregar la reserva: ", error);
-            });
-    }
-
-    function mostrarModalReservaAgregada(reserva) {
-        modalBody.innerHTML = `
-            <p>Tu reserva fue agregada correctamente!</p>
-            <p><strong>Room:</strong> ${reserva.room}</p>
-            <p><strong>Name:</strong> ${reserva.name}</p>
-            <p><strong>Place:</strong> ${reserva.place}</p>
-            <p><strong>Time:</strong> ${reserva.time}</p>
-            <p><strong>Pax:</strong> ${reserva.pax}</p>
-            <p><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
-        `;
-        $('#reservaModal').modal('show'); // Mostrar el modal
+        push(ref(db, 'reservas/'), reserva);
+        alert("Tu reserva fue agregada correctamente!");
     }
 
     onValue(ref(db, 'reservas/'), (snapshot) => {
@@ -232,6 +222,7 @@
             const reserva = childSnapshot.val();
             const row = document.createElement('tr');
             row.innerHTML = `
+                <td>${reserva.fecha}</td>
                 <td>${reserva.room}</td>
                 <td>${reserva.name}</td>
                 <td>${reserva.place}</td>
@@ -239,13 +230,14 @@
                 <td>${reserva.pax}</td>
                 <td>${reserva.notes || 'N/A'}</td>
             `;
-            row.addEventListener('click', () => mostrarDetallesReserva(reserva)); // Evento de clic
+            row.addEventListener('click', () => mostrarDetallesReserva(reserva));
             reservasList.appendChild(row);
         });
     });
 
     function mostrarDetallesReserva(reserva) {
         modalBody.innerHTML = `
+            <p><strong>Fecha:</strong> ${reserva.fecha}</p>
             <p><strong>Room:</strong> ${reserva.room}</p>
             <p><strong>Name:</strong> ${reserva.name}</p>
             <p><strong>Place:</strong> ${reserva.place}</p>
@@ -253,10 +245,9 @@
             <p><strong>Pax:</strong> ${reserva.pax}</p>
             <p><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
         `;
-        $('#reservaModal').modal('show'); // Mostrar el modal
+        $('#reservaModal').modal('show');
     }
 
-    // Buscador de reservas
     searchInput.addEventListener('keyup', () => {
         const filter = searchInput.value.toLowerCase();
         const rows = reservasList.getElementsByTagName('tr');
