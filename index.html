@@ -62,7 +62,9 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="time">Time</label>
-                        <input type="time" class="form-control" id="time" required>
+                        <select class="form-control" id="time" required>
+                            <option value="">Selecciona una hora</option>
+                        </select>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="pax">Pax</label>
@@ -144,6 +146,40 @@
     const reservasList = document.getElementById('reservasList');
     const modalBody = document.getElementById('modalBody');
     const searchInput = document.getElementById('searchInput');
+    const placeSelect = document.getElementById('place');
+    const timeSelect = document.getElementById('time');
+
+    placeSelect.addEventListener('change', () => {
+        const selectedPlace = placeSelect.value;
+        actualizarHorarios(selectedPlace);
+    });
+
+    function actualizarHorarios(place) {
+        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Reiniciar las opciones
+
+        let horarios;
+        switch (place) {
+            case "Hibachi":
+                horarios = ["6:00 PM", "7:15 PM", "8:30 PM", "9:45 PM"];
+                break;
+            case "El Patio":
+            case "Bluewater Grill":
+            case "Bordeaux":
+            case "Himitsu":
+            case "Olio":
+                horarios = ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"];
+                break;
+            default:
+                horarios = [];
+        }
+
+        horarios.forEach(horario => {
+            const option = document.createElement('option');
+            option.value = horario;
+            option.textContent = horario;
+            timeSelect.appendChild(option);
+        });
+    }
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -156,6 +192,7 @@
 
         agregarReserva({ room, name, place, time, pax, notes });
         form.reset();
+        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Reiniciar el campo de tiempo
     });
 
     function agregarReserva(reserva) {
