@@ -3,77 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Reservas</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Reservas de Restaurante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="form-container">
-        <h2>Formulario de Reservas</h2>
-        <form id="reservaForm">
-            <div class="form-group">
-                <label for="fecha">Fecha</label>
-                <input type="date" id="fecha" name="fecha" required>
-            </div>
-            <div class="form-group">
-                <label for="room">Room</label>
-                <input type="text" id="room" name="room" placeholder="Número de habitación" required pattern="\d{4}" title="Ingrese un número de habitación de 4 dígitos">
-            </div>
-            <div class="form-group">
-                <label for="huesped">Huésped</label>
-                <input type="text" id="huesped" name="huesped" placeholder="Nombre del huésped" required>
-            </div>
-            <div class="form-group">
-                <label for="restaurante">Restaurante</label>
-                <select id="restaurante" name="restaurante" required>
-                    <option value="">Seleccione un restaurante</option>
-                    <option value="Himitsu">Himitsu</option>
-                    <option value="El Patio">El Patio</option>
-                    <option value="Bluewater Grill">Bluewater Grill</option>
-                    <option value="Olio">Olio</option>
-                    <option value="Bordeaux">Bordeaux</option>
-                    <option value="Hibachi">Hibachi</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="hora">Hora</label>
-                <select id="hora" name="hora" required>
-                    <option value="">Seleccione un horario</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="pax">PAX</label>
-                <input type="number" id="pax" name="pax" placeholder="Número de personas" required>
-            </div>
-            <div class="form-group">
-                <label for="notas">Notas</label>
-                <input type="text" id="notas" name="notas" placeholder="Notas adicionales">
-            </div>
-            <input type="submit" value="Reservar">
-        </form>
+<div class="container">
+    <h1 class="text-center">Reservas de Restaurante</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Agregar Reserva</h5>
+            <form id="reservaForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" class="form-control" id="fecha" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar Reserva</button>
+            </form>
+        </div>
     </div>
 
-    <div class="table-container">
-        <h2>Reservas</h2>
-        <table id="reservasTable">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Room</th>
-                    <th>Huésped</th>
-                    <th>Restaurante</th>
-                    <th>Hora</th>
-                    <th>PAX</th>
-                    <th>Notas</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Las reservas se agregarán aquí dinámicamente -->
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Reservas Hechas</h5>
+            <ul id="reservasList" class="list-group"></ul>
+        </div>
     </div>
+</div>
 
-    <script src="firebase.js"></script> <!-- Asegúrate de tener tu configuración de Firebase aquí -->
-    <script src="app.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCR7ODl0gz3S9ca89-VxVJ1uZoVlSE0bgo",
+        authDomain: "vipreservas-6ed68.firebaseapp.com",
+        databaseURL: "https://vipreservas-6ed68-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "vipreservas-6ed68",
+        storageBucket: "vipreservas-6ed68.appspot.com",
+        messagingSenderId: "449237340285",
+        appId: "1:449237340285:web:8e7f8205bbb52d2821e114"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const form = document.getElementById('reservaForm');
+    const reservasList = document.getElementById('reservasList');
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('nombre').value;
+        const fecha = document.getElementById('fecha').value;
+        agregarReserva({ nombre, fecha });
+        form.reset();
+    });
+
+    function agregarReserva(reserva) {
+        push(ref(db, 'reservas/'), reserva);
+    }
+
+    onValue(ref(db, 'reservas/'), (snapshot) => {
+        reservasList.innerHTML = '';
+        snapshot.forEach((childSnapshot) => {
+            const reserva = childSnapshot.val();
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.textContent = `${reserva.nombre} - ${reserva.fecha}`;
+            reservasList.appendChild(li);
+        });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
