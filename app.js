@@ -1,78 +1,101 @@
-// Importar las funciones necesarias de Firebase
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+// Capturamos el formulario y la tabla
+const form = document.getElementById('reservaForm');
+const reservasTable = document.getElementById('reservasTable').getElementsByTagName('tbody')[0];
 
-// Tu configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
-    authDomain: "ismakun-bf0fa.firebaseapp.com",
-    projectId: "ismakun-bf0fa",
-    storageBucket: "ismakun-bf0fa.appspot.com",
-    messagingSenderId: "1028877703945",
-    appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+// Opciones de horarios por restaurante
+const horariosRestaurantes = {
+    "Himitsu": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+    "El Patio": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+    "Bluewater Grill": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+    "Olio": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+    "Bordeaux": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+    "Hibachi": ["6:00 PM", "7:15 PM", "8:30 PM", "9:45 PM"]
 };
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Seleccionamos los elementos del restaurante y hora
+const restauranteSelect = document.getElementById('restaurante');
+const horaSelect = document.getElementById('hora');
 
-// Referencia a la colección de reservas
-const reservasRef = collection(db, "reservas");
+// Función para actualizar los horarios según el restaurante seleccionado
+restauranteSelect.addEventListener('change', function() {
+    const restauranteSeleccionado = this.value;
 
-// Función para agregar una reserva
-document.getElementById("reservasForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    // Limpiamos los horarios previos
+    horaSelect.innerHTML = '<option value="">Seleccione un horario</option>';
 
-    const nombre = document.getElementById("nombre").value;
-    const room = document.getElementById("room").value;
-    const fecha = document.getElementById("fecha").value;
-    const hora = document.getElementById("hora").value;
-    const restaurante = document.getElementById("restaurante").value;
-    const notas = document.getElementById("notas").value;
+    // Verificamos si hay horarios disponibles para el restaurante seleccionado
+    if (horariosRestaurantes[restauranteSeleccionado]) {
+        const horarios = horariosRestaurantes[restauranteSeleccionado];
 
-    try {
-        // Agregar la reserva a Firestore
-        await addDoc(reservasRef, {
-            nombre: nombre,
-            room: room,
-            fecha: fecha,
-            hora: hora,
-            restaurante: restaurante,
-            notas: notas
+        // Agregamos los horarios a la lista desplegable
+        horarios.forEach(function(horario) {
+            const option = document.createElement('option');
+            option.value = horario;
+            option.textContent = horario;
+            horaSelect.appendChild(option);
         });
-        alert("Reserva agregada exitosamente!");
-
-        // Limpiar el formulario
-        document.getElementById("reservasForm").reset();
-
-        // Actualizar la tabla de reservas
-        mostrarReservas();
-    } catch (error) {
-        console.error("Error al agregar la reserva: ", error);
     }
 });
 
-// Función para mostrar las reservas
-async function mostrarReservas() {
-    const reservasTableBody = document.getElementById("tablaReservas").getElementsByTagName("tbody")[0];
-    reservasTableBody.innerHTML = ""; // Limpiar la tabla antes de mostrar
+// Manejamos el envío del formulario
+form.addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevenir el envío del formulario
 
+    // Capturamos los valores de los campos
+    const fecha = document.getElementById('fecha').value;
+    const room = document.getElementById('room').value;
+    const huesped = document.getElementById('huesped').value;
+    const restaurante = restauranteSelect.value;
+    const hora = horaSelect.value;
+    const pax = parseInt(document.getElementById('pax').value);
+    const notas = document.getElementById('notas').value;
+
+    // Crea el objeto de reserva
+    const reserva = {
+        fecha,
+        room,
+        huesped,
+        restaurante,
+        hora,
+        pax,
+        notas
+    };
+
+    // Envío de datos a Firestore
     try {
-        const querySnapshot = await getDocs(reservasRef);
-        querySnapshot.forEach((doc) => {
-            const reserva = doc.data();
-            const row = reservasTableBody.insertRow();
-            row.insertCell(0).textContent = reserva.nombre;
-            row.insertCell(1).textContent = reserva.room;
-            row.insertCell(2).textContent = reserva.fecha;
-            row.insertCell(3).textContent = reserva.hora;
-            row.insertCell(4).textContent = reserva.restaurante;
-            row.insertCell(5).textContent = reserva.notas;
-        });
-    } catch (error) {
-        console.error("Error al obtener las reservas: ", error);
+        const docRef = await addDoc(collection(db, "reservas"), reserva);
+        console.log("Reserva guardada con ID: ", docRef.id);
+        form.reset();
+        horaSelect.innerHTML = '<option value="">Seleccione un horario</option>'; // Reiniciar horarios
+        // Actualizar tabla de reservas
+        const row = reservasTable.insertRow();
+        row.insertCell(0).textContent = fecha;
+        row.insertCell(1).textContent = room;
+        row.insertCell(2).textContent = huesped;
+        row.insertCell(3).textContent = restaurante;
+        row.insertCell(4).textContent = hora;
+        row.insertCell(5).textContent = pax;
+        row.insertCell(6).textContent = notas;
+    } catch (e) {
+        console.error("Error al guardar la reserva: ", e);
     }
+});
+
+// Función para consultar las reservas desde Firestore
+async function consultarReservas() {
+    const querySnapshot = await getDocs(collection(db, "reservas"));
+    querySnapshot.forEach((doc) => {
+        const reserva = doc.data();
+        const row = reservasTable.insertRow();
+        row.insertCell(0).textContent = reserva.fecha;
+        row.insertCell(1).textContent = reserva.room;
+        row.insertCell(2).textContent = reserva.huesped;
+        row.insertCell(3).textContent = reserva.restaurante;
+        row.insertCell(4).textContent = reserva.hora;
+        row.insertCell(5).textContent = reserva.pax;
+        row.insertCell(6).textContent = reserva.notas;
+    });
 }
 
-// Llamar a mostrarReservas al cargar la página
-mostrarReservas();
+// Consultar reservas al cargar la página
+window.onload = consultarReservas;
