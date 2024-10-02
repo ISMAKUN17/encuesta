@@ -1,60 +1,31 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f8ff;
-  color: #333;
-}
-
-h1 {
-  text-align: center;
-  color: #005b99;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  max-width: 400px;
+#consultaReservas {
   margin: 20px auto;
+  width: 90%;
+  text-align: center;
 }
 
-input, textarea {
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-button {
-  padding: 10px;
-  background-color: #005b99;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #007acc;
-}
-
-#reservasList .reserva {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin: 10px;
-  border-radius: 5px;
-  background-color: #fff;
-}
-
-#reservasList .reserva h3 {
-  margin-top: 0;
-  color: #005b99;
-}
-
-#reservasList .reserva button {
-  background-color: #e74c3c;
+#tablaReservas {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 10px;
 }
 
-#reservasList .reserva button:hover {
-  background-color: #c0392b;
+#tablaReservas th, #tablaReservas td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+#tablaReservas th {
+  background-color: #0099cc;
+  color: white;
+  cursor: pointer;
+}
+
+#tablaReservas tr:hover {
+  background-color: #f1f1f1;
+}
+
+#tablaReservas tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
