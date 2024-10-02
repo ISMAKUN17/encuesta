@@ -28,17 +28,17 @@
         }
         td, th {
             text-align: center;
-            padding: 8px; /* Ajustar padding para filas más delgadas */
-            white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
-            overflow: hidden; /* Ocultar el desbordamiento */
-            text-overflow: ellipsis; /* Añadir puntos suspensivos para texto muy largo */
+            padding: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         th {
             background-color: #007bff;
             color: white;
-            position: sticky; /* Fijar el encabezado */
-            top: 0; /* Mantenerlo en la parte superior */
-            z-index: 1; /* Asegurarse de que esté por encima de las filas */
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
         .table-striped tbody tr:nth-of-type(odd) {
             background-color: #f2f2f2;
@@ -53,9 +53,8 @@
                 grid-template-columns: 1fr;
             }
         }
-        /* Nuevo estilo para manejar el desbordamiento */
         .table-responsive {
-            overflow-x: auto; /* Permitir desplazamiento horizontal */
+            overflow-x: auto;
         }
     </style>
 </head>
@@ -186,8 +185,8 @@
     const timeSelect = document.getElementById('time');
     const dateInput = document.getElementById('date');
     const roomInput = document.getElementById('room');
+    const paxInput = document.getElementById('pax');
 
-    // Establecer fecha predeterminada como la fecha actual
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
 
@@ -198,7 +197,6 @@
 
     function actualizarHorarios(place) {
         timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
-
         let horarios;
         switch (place) {
             case "Hibachi":
@@ -214,7 +212,6 @@
             default:
                 horarios = [];
         }
-
         horarios.forEach(horario => {
             const option = document.createElement('option');
             option.value = horario;
@@ -231,24 +228,49 @@
         const name = document.getElementById('name').value;
         const place = placeSelect.value;
         const time = timeSelect.value;
-        const pax = document.getElementById('pax').value;
+        const pax = parseInt(paxInput.value);
         const notes = document.getElementById('notes').value;
 
-        // Validar que el room sea un número entre 1101 y 3493
-        if (room < 1101 || room > 3493) {
+        // Validar que el room sea un número entre 1101 y 3400
+        if (room < 1101 || room > 3400) {
             alert("El número de habitación debe estar entre 1101 y 3400.");
             return;
         }
 
-        const reserva = { date, room, name, place, time, pax, notes };
-        agregarReserva(reserva);
-        form.reset(); // Reiniciar el formulario
-        dateInput.value = today; // Resetear la fecha al día actual
+        // Validar el límite de pax según el lugar y horario
+        validarReservas(date, place, time, pax)
+            .then(valid => {
+                if (valid) {
+                    const reserva = { date, room, name, place, time, pax, notes };
+                    agregarReserva(reserva);
+                    form.reset(); // Reiniciar el formulario
+                    dateInput.value = today; // Resetear la fecha al día actual
+                } else {
+                    alert("Lo siento, ya no hay disponibilidad para esa reserva.");
+                }
+            });
     });
 
     function agregarReserva(reserva) {
         push(ref(db, 'reservas/'), reserva);
         alert("Tu reserva fue agregada correctamente!");
+    }
+
+    async function validarReservas(date, place, time, pax) {
+        return new Promise((resolve) => {
+            onValue(ref(db, 'reservas/'), (snapshot) => {
+                let totalPax = 0;
+                snapshot.forEach((childSnapshot) => {
+                    const reserva = childSnapshot.val();
+                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
+                        totalPax += reserva.pax;
+                    }
+                });
+
+                let maxPax = place === "Hibachi" ? 10 : 8; // 10 para Hibachi, 8 para los demás
+                resolve(totalPax + pax <= maxPax * 8); // Verifica si la nueva reserva excede el límite
+            });
+        });
     }
 
     onValue(ref(db, 'reservas/'), (snapshot) => {
