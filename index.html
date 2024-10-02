@@ -1,29 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reservas VIP</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Reservas VIP</h1>
-  
-  <!-- Formulario para agregar reservas -->
-  <form id="reservaForm">
-    <input type="text" id="nombre" placeholder="Nombre" required>
-    <input type="number" id="room" placeholder="Número de Habitación" required>
-    <input type="date" id="fecha" required>
-    <input type="time" id="hora" required>
-    <input type="number" id="pax" placeholder="Número de Personas" required>
-    <textarea id="notas" placeholder="Notas"></textarea>
-    <button type="submit">Agregar Reserva</button>
-  </form>
-  
-  <!-- Contenedor para mostrar las reservas -->
-  <div id="reservasList"></div>
-
-  <script src="firebase.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+<!-- Nueva sección de Consulta de Reservas -->
+<section id="consultaReservas">
+  <h2>Consulta de Reservas</h2>
+  <table id="tablaReservas">
+    <thead>
+      <tr>
+        <th onclick="ordenarPor('fecha')">Fecha</th>
+        <th onclick="ordenarPor('room')">Room</th>
+        <th onclick="ordenarPor('restaurante')">Restaurante</th>
+        <th onclick="ordenarPor('hora')">Hora</th>
+        <th>Nombre</th>
+        <th>Pax</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Las reservas se insertarán aquí dinámicamente -->
+    </tbody>
+  </table>
+</section>
