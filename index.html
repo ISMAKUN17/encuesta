@@ -23,8 +23,16 @@
         tr {
             cursor: pointer; /* Cambia el cursor al pasar sobre las filas */
         }
-        td {
-            text-align: center; /* Centrar el texto en las celdas */
+        td, th {
+            text-align: center; /* Centrar el texto en las celdas y encabezados */
+        }
+        th {
+            background-color: #007bff; /* Color de fondo para los encabezados */
+            color: white; /* Color del texto de los encabezados */
+            padding: 10px; /* Espaciado en los encabezados */
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2; /* Color alternativo para las filas */
         }
     </style>
 </head>
