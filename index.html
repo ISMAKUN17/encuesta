@@ -20,6 +20,9 @@
         .form-control {
             max-width: 300px; /* Limitar el ancho de los campos */
         }
+        .form-group {
+            margin-bottom: 1rem; /* Espaciado entre grupos */
+        }
         tr {
             cursor: pointer; /* Cambia el cursor al pasar sobre las filas */
         }
@@ -34,6 +37,11 @@
         .table-striped tbody tr:nth-of-type(odd) {
             background-color: #f2f2f2; /* Color alternativo para las filas */
         }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+            gap: 20px; /* Espacio entre columnas */
+        }
     </style>
 </head>
 <body>
@@ -45,20 +53,20 @@
         <div class="card-body">
             <h5 class="card-title">Agregar Reserva</h5>
             <form id="reservaForm">
-                <div class="form-row">
-                    <div class="form-group col-md-2">
+                <div class="form-grid">
+                    <div class="form-group">
                         <label for="date">Date</label>
                         <input type="date" class="form-control" id="date" required>
                     </div>
-                    <div class="form-group col-md-2">
+                    <div class="form-group">
                         <label for="room">Room</label>
                         <input type="number" class="form-control" id="room" min="1101" max="3400" required>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" required>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group">
                         <label for="place">Place</label>
                         <select class="form-control" id="place" required>
                             <option value="">Selecciona un lugar</option>
@@ -70,24 +78,22 @@
                             <option value="Olio">Olio</option>
                         </select>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group">
                         <label for="time">Time</label>
                         <select class="form-control" id="time" required>
                             <option value="">Selecciona una hora</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group">
                         <label for="pax">Pax</label>
                         <input type="number" class="form-control" id="pax" required>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group">
                         <label for="notes">Notes</label>
                         <textarea class="form-control" id="notes" rows="1"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Agregar Reserva</button>
+                <button type="submit" class="btn btn-primary mt-3">Agregar Reserva</button>
             </form>
         </div>
     </div>
