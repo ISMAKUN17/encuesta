@@ -47,12 +47,12 @@
             <form id="reservaForm">
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <label for="fecha">Fecha</label>
-                        <input type="text" class="form-control" id="fecha" placeholder="DD/MM/YY" required>
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" id="date" required>
                     </div>
                     <div class="form-group col-md-2">
                         <label for="room">Room</label>
-                        <input type="number" class="form-control" id="room" min="1000" max="9999" required>
+                        <input type="number" class="form-control" id="room" min="1101" max="3400" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="name">Name</label>
@@ -101,7 +101,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Fecha</th>
+                        <th>Date</th>
                         <th>Room</th>
                         <th>Name</th>
                         <th>Place</th>
@@ -161,7 +161,12 @@
     const searchInput = document.getElementById('searchInput');
     const placeSelect = document.getElementById('place');
     const timeSelect = document.getElementById('time');
-    const fechaInput = document.getElementById('fecha');
+    const dateInput = document.getElementById('date');
+    const roomInput = document.getElementById('room');
+
+    // Establecer fecha predeterminada como la fecha actual
+    const today = new Date().toISOString().split('T')[0]; // Obtener la fecha actual en formato YYYY-MM-DD
+    dateInput.value = today;
 
     placeSelect.addEventListener('change', () => {
         const selectedPlace = placeSelect.value;
@@ -197,18 +202,23 @@
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const fecha = fechaInput.value;
-        const room = document.getElementById('room').value;
+        const date = dateInput.value;
+        const room = roomInput.value;
         const name = document.getElementById('name').value;
         const place = document.getElementById('place').value;
         const time = document.getElementById('time').value;
         const pax = document.getElementById('pax').value;
         const notes = document.getElementById('notes').value;
 
-        agregarReserva({ fecha, room, name, place, time, pax, notes });
-        form.reset();
-        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Reiniciar el campo de tiempo
-        fechaInput.value = ''; // Reiniciar el campo de fecha
+        if (room < 1101 || room > 3400) {
+            alert("El número de habitación debe estar entre 1101 y 3400.");
+            return;
+        }
+
+        const reserva = { date, room, name, place, time, pax, notes };
+        agregarReserva(reserva);
+        form.reset(); // Reiniciar el formulario
+        dateInput.value = today; // Resetear la fecha al día actual
     });
 
     function agregarReserva(reserva) {
@@ -222,7 +232,7 @@
             const reserva = childSnapshot.val();
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${reserva.fecha}</td>
+                <td>${reserva.date}</td>
                 <td>${reserva.room}</td>
                 <td>${reserva.name}</td>
                 <td>${reserva.place}</td>
@@ -237,7 +247,7 @@
 
     function mostrarDetallesReserva(reserva) {
         modalBody.innerHTML = `
-            <p><strong>Fecha:</strong> ${reserva.fecha}</p>
+            <p><strong>Date:</strong> ${reserva.date}</p>
             <p><strong>Room:</strong> ${reserva.room}</p>
             <p><strong>Name:</strong> ${reserva.name}</p>
             <p><strong>Place:</strong> ${reserva.place}</p>
