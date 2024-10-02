@@ -20,6 +20,9 @@
         .form-control {
             max-width: 300px; /* Limitar el ancho de los campos */
         }
+        tr {
+            cursor: pointer; /* Cambia el cursor al pasar sobre las filas */
+        }
     </style>
 </head>
 <body>
@@ -89,12 +92,12 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal para mostrar información de la reserva -->
 <div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="reservaModalLabel">Reserva Agregada</h5>
+                <h5 class="modal-title" id="reservaModalLabel">Detalles de la Reserva</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span>&times;</span>
                 </button>
@@ -147,14 +150,14 @@
     function agregarReserva(reserva) {
         push(ref(db, 'reservas/'), reserva)
             .then(() => {
-                mostrarModal(reserva);
+                mostrarModalReservaAgregada(reserva);
             })
             .catch((error) => {
                 console.error("Error al agregar la reserva: ", error);
             });
     }
 
-    function mostrarModal(reserva) {
+    function mostrarModalReservaAgregada(reserva) {
         modalBody.innerHTML = `
             <p>Tu reserva fue agregada correctamente!</p>
             <p><strong>Room:</strong> ${reserva.room}</p>
@@ -180,9 +183,22 @@
                 <td>${reserva.pax}</td>
                 <td>${reserva.notes || 'N/A'}</td>
             `;
+            row.addEventListener('click', () => mostrarDetallesReserva(reserva)); // Evento de clic
             reservasList.appendChild(row);
         });
     });
+
+    function mostrarDetallesReserva(reserva) {
+        modalBody.innerHTML = `
+            <p><strong>Room:</strong> ${reserva.room}</p>
+            <p><strong>Name:</strong> ${reserva.name}</p>
+            <p><strong>Place:</strong> ${reserva.place}</p>
+            <p><strong>Time:</strong> ${reserva.time}</p>
+            <p><strong>Pax:</strong> ${reserva.pax}</p>
+            <p><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
+        `;
+        $('#reservaModal').modal('show'); // Mostrar el modal
+    }
 
     // Buscador de reservas
     searchInput.addEventListener('keyup', () => {
