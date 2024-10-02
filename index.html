@@ -3,39 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Reservas VIP</title>
-    <link rel="stylesheet" href="style.css"> <!-- Asegúrate de que esto sea correcto -->
+    <script type="module" src="app.js" defer></script>
 </head>
 <body>
     <header>
         <h1>Reservas VIP</h1>
     </header>
-    <section>
-        <h2>Agregar Reserva</h2>
+    <main>
         <form id="reservasForm">
             <label for="nombre">Nombre:</label>
             <input type="text" id="nombre" required>
-
             <label for="room">Room:</label>
-            <input type="number" id="room" required minlength="4" maxlength="4">
-
+            <input type="text" id="room" required pattern="\d{4}" title="Solo números de 4 dígitos">
             <label for="fecha">Fecha:</label>
             <input type="date" id="fecha" required>
-
             <label for="hora">Hora:</label>
             <input type="time" id="hora" required>
-
             <label for="restaurante">Restaurante:</label>
             <input type="text" id="restaurante" required>
-
             <label for="notas">Notas:</label>
             <textarea id="notas"></textarea>
-
             <button type="submit">Agregar Reserva</button>
         </form>
-    </section>
-    <section>
-        <h2>Reservas Guardadas</h2>
+
+        <h2>Reservas</h2>
         <table id="tablaReservas">
             <thead>
                 <tr>
@@ -47,12 +40,8 @@
                     <th>Notas</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Las reservas se agregarán aquí dinámicamente -->
-            </tbody>
+            <tbody></tbody>
         </table>
-    </section>
-
-    <script src="script.js"></script> <!-- Asegúrate de que esto sea correcto -->
+    </main>
 </body>
 </html>
