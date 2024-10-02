@@ -248,7 +248,7 @@
                 });
 
                 const maxPax = place === "Hibachi" ? 10 : 8;
-                const availablePax = maxPax * 8 - totalPax; // Total disponible considerando 8 horarios
+                const availablePax = maxPax - totalPax; // Total disponible considerando el límite por horario
 
                 availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
             });
@@ -269,7 +269,7 @@
         const notes = document.getElementById('notes').value;
 
         // Validar que el room sea un número entre 1101 y 3400
-        if (room < 1101 || room > 3493) {
+        if (room < 1101 || room > 3400) {
             alert("El número de habitación debe estar entre 1101 y 3400.");
             return;
         }
@@ -306,7 +306,7 @@
                 });
 
                 let maxPax = place === "Hibachi" ? 10 : 8; // 10 para Hibachi, 8 para los demás
-                resolve(totalPax + pax <= maxPax * 8); // Verifica si la nueva reserva excede el límite
+                resolve(totalPax + pax <= maxPax); // Verifica si la nueva reserva excede el límite
             });
         });
     }
