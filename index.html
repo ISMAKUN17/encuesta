@@ -17,64 +17,56 @@
             align-items: center;
             min-height: 100vh;
         }
-
         /* Contenedores */
         .form-container, .table-container {
             background-color: #fff;
-            padding: 15px; /* Ajustado para ser más pequeño */
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 600px;
             margin-bottom: 20px;
         }
-
         /* Encabezados */
         h2 {
             text-align: center;
             color: #333;
             font-weight: 600;
-            margin-bottom: 15px; /* Ajustado para ser más pequeño */
+            margin-bottom: 20px;
         }
-
         /* Etiquetas y entradas */
         label {
             font-weight: 600;
             display: block;
-            margin-bottom: 5px; /* Ajustado para ser más pequeño */
+            margin-bottom: 8px;
             color: #555;
         }
-
         input, select {
             width: 100%;
-            padding: 10px; /* Ajustado para ser más pequeño */
-            margin-bottom: 10px; /* Ajustado para ser más pequeño */
+            padding: 10px;
+            margin-bottom: 15px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 14px; /* Ajustado para ser más pequeño */
+            font-size: 14px;
             transition: border-color 0.3s ease;
         }
-
         input:focus, select:focus {
             border-color: #4CAF50;
             outline: none;
         }
-
-        input[type="submit"] {
+        input[type="submit"], .download-btn {
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 10px; /* Ajustado para ser más pequeño */
-            font-size: 16px; /* Ajustado para ser más pequeño */
+            padding: 10px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
-        input[type="submit"]:hover {
+        input[type="submit"]:hover, .download-btn:hover {
             background-color: #43a047;
         }
-
         /* Tabla de reservas */
         table {
             width: 100%;
@@ -82,44 +74,36 @@
             margin-top: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         th, td {
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             text-align: center;
         }
-
         th {
             background-color: #4CAF50;
             color: white;
             font-weight: bold;
         }
-
         td {
             background-color: #f9f9f9;
             transition: background-color 0.3s ease;
         }
-
         tr:hover td {
             background-color: #f1f1f1;
         }
-
         /* Ajuste para pantallas pequeñas */
         @media (max-width: 600px) {
             .form-container, .table-container {
                 width: 100%;
-                padding: 10px; /* Ajustado para ser más pequeño */
+                padding: 15px;
             }
-
             table {
                 font-size: 14px;
             }
-
             input, select {
                 font-size: 14px;
             }
-
-            input[type="submit"] {
+            input[type="submit"], .download-btn {
                 font-size: 16px;
             }
         }
@@ -136,7 +120,7 @@
             </div>
             <div class="form-group">
                 <label for="room">Room</label>
-                <input type="text" id="room" name="room" placeholder="Número de habitación" required pattern="\d{4}" title="Ingrese un número de habitación de 4 dígitos">
+                <input type="text" id="room" name="room" placeholder="Número de habitación" required pattern="\d{4}">
             </div>
             <div class="form-group">
                 <label for="huesped">Huésped</label>
@@ -166,7 +150,7 @@
             </div>
             <div class="form-group">
                 <label for="notas">Notas</label>
-                <input type="text" id="notas" name="notas" placeholder="Notas adicionales">
+                <input type="text" id="notas" name="notas" placeholder="Notas adicionales (opcional)">
             </div>
             <input type="submit" value="Reservar">
         </form>
@@ -190,6 +174,7 @@
                 <!-- Las reservas se agregarán aquí dinámicamente -->
             </tbody>
         </table>
+        <button class="download-btn" id="downloadCsv">Descargar CSV</button>
     </div>
 
     <script>
@@ -255,64 +240,69 @@
             const huesped = document.getElementById('huesped').value;
             const restaurante = restauranteSelect.value;
             const hora = horaSelect.value;
-            const pax = parseInt(document.getElementById('pax').value);
+            const pax = document.getElementById('pax').value;
             const notas = document.getElementById('notas').value;
 
-            // Verificamos si el horario tiene suficiente capacidad
-            if (!reservasPorHorario[hora]) {
-                reservasPorHorario[hora] = 0;
-            }
-
-            if (reservasPorHorario[hora] + pax > limitePax[restaurante]) {
-                alert(`El horario ${hora} ya está lleno. Por favor, elija otro horario.`);
+            // Validar si el número de pax excede el límite permitido
+            if (pax > limitePax[restaurante]) {
+                alert(`El número máximo de personas para ${restaurante} es ${limitePax[restaurante]}.`);
                 return;
             }
 
-            // Agregamos el pax al horario
-            reservasPorHorario[hora] += pax;
+            // Validar si el horario ya está reservado
+            if (!reservasPorHorario[hora]) {
+                reservasPorHorario[hora] = 0; // Inicializamos si no existe
+            }
 
-            // Crea el objeto de reserva
-            const reserva = {
-                fecha,
-                room,
-                huesped,
-                restaurante,
-                hora,
-                pax,
-                notas
-            };
+            if (reservasPorHorario[hora] + parseInt(pax) > limitePax[restaurante]) {
+                alert(`Este horario ya está lleno para el restaurante ${restaurante}.`);
+                return;
+            }
 
-            // Envío de datos al servidor
-            fetch('/reservas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(reserva)
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.text();
+            // Agregar reserva
+            reservasPorHorario[hora] += parseInt(pax);
+
+            // Crear una nueva fila en la tabla de reservas
+            const newRow = reservasTable.insertRow();
+            newRow.insertCell(0).textContent = fecha;
+            newRow.insertCell(1).textContent = room;
+            newRow.insertCell(2).textContent = huesped;
+            newRow.insertCell(3).textContent = restaurante;
+            newRow.insertCell(4).textContent = hora;
+            newRow.insertCell(5).textContent = pax;
+            newRow.insertCell(6).textContent = notas;
+
+            // Reiniciar el formulario
+            form.reset();
+            horaSelect.innerHTML = '<option value="">Seleccione un horario</option>';
+            reservasPorHorario[hora] = reservasPorHorario[hora] || 0; // Aseguramos que el valor sea 0 si no existe
+        });
+
+        // Función para descargar las reservas en formato CSV
+        document.getElementById('downloadCsv').addEventListener('click', function() {
+            const rows = [];
+            // Agregar encabezados
+            rows.push(['Fecha', 'Room', 'Huésped', 'Restaurante', 'Hora', 'PAX', 'Notas']);
+
+            // Recorrer las filas de la tabla
+            for (let i = 0; i < reservasTable.rows.length; i++) {
+                const row = [];
+                for (let j = 0; j < reservasTable.rows[i].cells.length; j++) {
+                    row.push(reservasTable.rows[i].cells[j].innerText);
                 }
-                throw new Error('Error al guardar la reserva');
-            })
-            .then(data => {
-                console.log(data); // Mensaje de éxito
-                form.reset();
-                horaSelect.innerHTML = '<option value="">Seleccione un horario</option>'; // Reiniciar horarios
-                // Actualizar tabla de reservas
-                const row = reservasTable.insertRow();
-                row.insertCell(0).textContent = fecha;
-                row.insertCell(1).textContent = room;
-                row.insertCell(2).textContent = huesped;
-                row.insertCell(3).textContent = restaurante;
-                row.insertCell(4).textContent = hora;
-                row.insertCell(5).textContent = pax;
-                row.insertCell(6).textContent = notas;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                rows.push(row);
+            }
+
+            // Crear un archivo CSV
+            const csvContent = "data:text/csv;charset=utf-8,"
+                + rows.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "reservas.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
     </script>
 </body>
