@@ -56,6 +56,10 @@
         .table-responsive {
             overflow-x: auto;
         }
+        .available-pax {
+            font-weight: bold;
+            color: green;
+        }
     </style>
 </head>
 <body>
@@ -109,6 +113,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Agregar Reserva</button>
             </form>
+            <div class="mt-3">
+                <span class="available-pax" id="availablePax"></span>
+            </div>
         </div>
     </div>
 
@@ -186,6 +193,7 @@
     const dateInput = document.getElementById('date');
     const roomInput = document.getElementById('room');
     const paxInput = document.getElementById('pax');
+    const availablePaxDisplay = document.getElementById('availablePax');
 
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
@@ -193,7 +201,11 @@
     placeSelect.addEventListener('change', () => {
         const selectedPlace = placeSelect.value;
         actualizarHorarios(selectedPlace);
+        actualizarDisponibilidad();
     });
+
+    timeSelect.addEventListener('change', actualizarDisponibilidad);
+    dateInput.addEventListener('change', actualizarDisponibilidad);
 
     function actualizarHorarios(place) {
         timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
@@ -220,6 +232,31 @@
         });
     }
 
+    function actualizarDisponibilidad() {
+        const date = dateInput.value;
+        const place = placeSelect.value;
+        const time = timeSelect.value;
+
+        if (date && place && time) {
+            onValue(ref(db, 'reservas/'), (snapshot) => {
+                let totalPax = 0;
+                snapshot.forEach((childSnapshot) => {
+                    const reserva = childSnapshot.val();
+                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
+                        totalPax += reserva.pax;
+                    }
+                });
+
+                const maxPax = place === "Hibachi" ? 10 : 8;
+                const availablePax = maxPax * 8 - totalPax; // Total disponible considerando 8 horarios
+
+                availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
+            });
+        } else {
+            availablePaxDisplay.textContent = "";
+        }
+    }
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -232,7 +269,7 @@
         const notes = document.getElementById('notes').value;
 
         // Validar que el room sea un número entre 1101 y 3400
-        if (room < 1101 || room > 3400) {
+        if (room < 1101 || room > 3493) {
             alert("El número de habitación debe estar entre 1101 y 3400.");
             return;
         }
@@ -245,6 +282,7 @@
                     agregarReserva(reserva);
                     form.reset(); // Reiniciar el formulario
                     dateInput.value = today; // Resetear la fecha al día actual
+                    availablePaxDisplay.textContent = ""; // Limpiar mensaje de disponibilidad
                 } else {
                     alert("Lo siento, ya no hay disponibilidad para esa reserva.");
                 }
