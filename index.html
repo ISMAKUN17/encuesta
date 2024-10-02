@@ -18,7 +18,7 @@
             margin-bottom: 20px;
         }
         .form-control {
-            max-width: 100%; /* Asegurar que el ancho sea responsivo */
+            max-width: 100%;
         }
         .form-group {
             margin-bottom: 1rem;
@@ -39,13 +39,17 @@
         }
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Columnas responsivas */
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
         }
         @media (max-width: 767px) {
             .form-grid {
-                grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+                grid-template-columns: 1fr;
             }
+        }
+        /* Nuevo estilo para manejar el desbordamiento */
+        .table-responsive {
+            overflow-x: auto; /* Permitir desplazamiento horizontal */
         }
     </style>
 </head>
@@ -109,22 +113,24 @@
                 Reservas Hechas
                 <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." style="width: 250px;">
             </h5>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Room</th>
-                        <th>Name</th>
-                        <th>Place</th>
-                        <th>Time</th>
-                        <th>Pax</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="reservasList">
-                    <!-- Aquí se agregarán las reservas -->
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Room</th>
+                            <th>Name</th>
+                            <th>Place</th>
+                            <th>Time</th>
+                            <th>Pax</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservasList">
+                        <!-- Aquí se agregarán las reservas -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -176,7 +182,7 @@
     const roomInput = document.getElementById('room');
 
     // Establecer fecha predeterminada como la fecha actual
-    const today = new Date().toISOString().split('T')[0]; // Obtener la fecha actual en formato YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
 
     placeSelect.addEventListener('change', () => {
@@ -185,7 +191,7 @@
     });
 
     function actualizarHorarios(place) {
-        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>'; // Reiniciar las opciones
+        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
 
         let horarios;
         switch (place) {
@@ -221,6 +227,7 @@
         const pax = document.getElementById('pax').value;
         const notes = document.getElementById('notes').value;
 
+        // Validar que el room sea un número entre 1101 y 3400
         if (room < 1101 || room > 3400) {
             alert("El número de habitación debe estar entre 1101 y 3400.");
             return;
