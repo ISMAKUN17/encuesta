@@ -60,7 +60,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Reservas Hechas</h5>
-            <ul id="reservasList" class="list-group"></ul>
+            <div id="reservasList" class="row"></div>
         </div>
     </div>
 </div>
@@ -112,10 +112,21 @@
         reservasList.innerHTML = '';
         snapshot.forEach((childSnapshot) => {
             const reserva = childSnapshot.val();
-            const li = document.createElement('li');
-            li.className = 'list-group-item';
-            li.textContent = `Room: ${reserva.room}, Name: ${reserva.name}, Place: ${reserva.place}, Time: ${reserva.time}, Pax: ${reserva.pax}, Notes: ${reserva.notes}`;
-            reservasList.appendChild(li);
+            const card = document.createElement('div');
+            card.className = 'col-md-4';
+            card.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${reserva.name}</h5>
+                        <p class="card-text"><strong>Room:</strong> ${reserva.room}</p>
+                        <p class="card-text"><strong>Place:</strong> ${reserva.place}</p>
+                        <p class="card-text"><strong>Time:</strong> ${reserva.time}</p>
+                        <p class="card-text"><strong>Pax:</strong> ${reserva.pax}</p>
+                        <p class="card-text"><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+            reservasList.appendChild(card);
         });
     });
 </script>
