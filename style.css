@@ -1,31 +1,97 @@
-#consultaReservas {
-  margin: 20px auto;
-  width: 90%;
-  text-align: center;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Color de fondo claro */
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    background-color: #007acc; /* Color azul */
+    color: white;
+    padding: 10px 0;
+    border-radius: 8px;
+}
+
+h1 {
+    margin: 0;
+}
+
+h2 {
+    color: #007acc; /* Color azul para los títulos */
+}
+
+section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #007acc; /* Borde azul */
+    border-radius: 8px;
+    background-color: white;
+}
+
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+textarea {
+    padding: 10px;
+    border: 1px solid #007acc; /* Borde azul */
+    border-radius: 4px;
+    font-size: 1em;
+    width: 100%; /* Ocupa todo el ancho */
+}
+
+textarea {
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+button {
+    grid-column: span 2; /* El botón ocupa dos columnas */
+    padding: 10px;
+    background-color: #007acc; /* Color azul */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #005fa3; /* Color azul más oscuro al pasar el mouse */
 }
 
 #tablaReservas {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
 }
 
-#tablaReservas th, #tablaReservas td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
+#tablaReservas th,
+#tablaReservas td {
+    border: 1px solid #007acc; /* Borde azul */
+    padding: 8px;
+    text-align: left;
 }
 
 #tablaReservas th {
-  background-color: #0099cc;
-  color: white;
-  cursor: pointer;
+    background-color: #e6f7ff; /* Color azul claro para encabezados */
+    cursor: pointer; /* Cambia el cursor al pasar por encima de los encabezados */
 }
 
-#tablaReservas tr:hover {
-  background-color: #f1f1f1;
+#tablaReservas tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Fila alternada con fondo gris claro */
 }
 
-#tablaReservas tr:nth-child(even) {
-  background-color: #f9f9f9;
+#tablaReservas tbody tr:hover {
+    background-color: #e0f7fa; /* Color azul claro al pasar el mouse sobre la fila */
 }
