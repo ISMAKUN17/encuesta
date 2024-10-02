@@ -67,6 +67,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Reservas Hechas</h5>
+            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar por nombre o lugar...">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -126,6 +127,7 @@
     const form = document.getElementById('reservaForm');
     const reservasList = document.getElementById('reservasList');
     const modalBody = document.getElementById('modalBody');
+    const searchInput = document.getElementById('searchInput');
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -178,6 +180,28 @@
             `;
             reservasList.appendChild(row);
         });
+    });
+
+    // Buscador de reservas
+    searchInput.addEventListener('keyup', () => {
+        const filter = searchInput.value.toLowerCase();
+        const rows = reservasList.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let found = false;
+
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j]) {
+                    const textValue = cells[j].textContent || cells[j].innerText;
+                    if (textValue.toLowerCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            rows[i].style.display = found ? "" : "none";
+        }
     });
 </script>
 
