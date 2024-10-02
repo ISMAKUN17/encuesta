@@ -123,8 +123,8 @@
                 <input type="text" id="room" name="room" placeholder="Número de habitación" required pattern="\d{4}">
             </div>
             <div class="form-group">
-                <label for="huesped">Huésped</label>
-                <input type="text" id="huesped" name="huesped" placeholder="Nombre del huésped" required>
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre del huésped" required>
             </div>
             <div class="form-group">
                 <label for="restaurante">Restaurante</label>
@@ -163,7 +163,7 @@
                 <tr>
                     <th>Fecha</th>
                     <th>Room</th>
-                    <th>Huésped</th>
+                    <th>Nombre</th>
                     <th>Restaurante</th>
                     <th>Hora</th>
                     <th>PAX</th>
@@ -237,7 +237,7 @@
             // Capturamos los valores de los campos
             const fecha = document.getElementById('fecha').value;
             const room = document.getElementById('room').value;
-            const huesped = document.getElementById('huesped').value;
+            const nombre = document.getElementById('nombre').value; // Cambio aquí
             const restaurante = restauranteSelect.value;
             const hora = horaSelect.value;
             const pax = document.getElementById('pax').value;
@@ -266,7 +266,7 @@
             const newRow = reservasTable.insertRow();
             newRow.insertCell(0).textContent = fecha;
             newRow.insertCell(1).textContent = room;
-            newRow.insertCell(2).textContent = huesped;
+            newRow.insertCell(2).textContent = nombre; // Cambio aquí
             newRow.insertCell(3).textContent = restaurante;
             newRow.insertCell(4).textContent = hora;
             newRow.insertCell(5).textContent = pax;
@@ -282,7 +282,7 @@
         document.getElementById('downloadCsv').addEventListener('click', function() {
             const rows = [];
             // Agregar encabezados
-            rows.push(['Fecha', 'Room', 'Huésped', 'Restaurante', 'Hora', 'PAX', 'Notas']);
+            rows.push(['Fecha', 'Room', 'Nombre', 'Restaurante', 'Hora', 'PAX', 'Notas']);
 
             // Recorrer las filas de la tabla
             for (let i = 0; i < reservasTable.rows.length; i++) {
