@@ -29,12 +29,28 @@
             <h5 class="card-title">Agregar Reserva</h5>
             <form id="reservaForm">
                 <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" required>
+                    <label for="room">Room</label>
+                    <input type="text" class="form-control" id="room" required>
                 </div>
                 <div class="form-group">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" class="form-control" id="fecha" required>
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="place">Place</label>
+                    <input type="text" class="form-control" id="place" required>
+                </div>
+                <div class="form-group">
+                    <label for="time">Time</label>
+                    <input type="time" class="form-control" id="time" required>
+                </div>
+                <div class="form-group">
+                    <label for="pax">Pax</label>
+                    <input type="number" class="form-control" id="pax" required>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea class="form-control" id="notes"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Agregar Reserva</button>
             </form>
@@ -71,14 +87,25 @@
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const nombre = document.getElementById('nombre').value;
-        const fecha = document.getElementById('fecha').value;
-        agregarReserva({ nombre, fecha });
+        const room = document.getElementById('room').value;
+        const name = document.getElementById('name').value;
+        const place = document.getElementById('place').value;
+        const time = document.getElementById('time').value;
+        const pax = document.getElementById('pax').value;
+        const notes = document.getElementById('notes').value;
+
+        agregarReserva({ room, name, place, time, pax, notes });
         form.reset();
     });
 
     function agregarReserva(reserva) {
-        push(ref(db, 'reservas/'), reserva);
+        push(ref(db, 'reservas/'), reserva)
+            .then(() => {
+                console.log("Reserva agregada con éxito");
+            })
+            .catch((error) => {
+                console.error("Error al agregar la reserva: ", error);
+            });
     }
 
     onValue(ref(db, 'reservas/'), (snapshot) => {
@@ -87,7 +114,7 @@
             const reserva = childSnapshot.val();
             const li = document.createElement('li');
             li.className = 'list-group-item';
-            li.textContent = `${reserva.nombre} - ${reserva.fecha}`;
+            li.textContent = `Room: ${reserva.room}, Name: ${reserva.name}, Place: ${reserva.place}, Time: ${reserva.time}, Pax: ${reserva.pax}, Notes: ${reserva.notes}`;
             reservasList.appendChild(li);
         });
     });
