@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Reservas</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Contenedores */
+        .form-container, .table-container {
+            background-color: #fff;
+            padding: 15px; /* Ajustado para ser más pequeño */
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        /* Encabezados */
+        h2 {
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px; /* Ajustado para ser más pequeño */
+        }
+
+        /* Etiquetas y entradas */
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px; /* Ajustado para ser más pequeño */
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px; /* Ajustado para ser más pequeño */
+            margin-bottom: 10px; /* Ajustado para ser más pequeño */
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px; /* Ajustado para ser más pequeño */
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px; /* Ajustado para ser más pequeño */
+            font-size: 16px; /* Ajustado para ser más pequeño */
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #43a047;
+        }
+
+        /* Tabla de reservas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover td {
+            background-color: #f1f1f1;
+        }
+
+        /* Ajuste para pantallas pequeñas */
+        @media (max-width: 600px) {
+            .form-container, .table-container {
+                width: 100%;
+                padding: 10px; /* Ajustado para ser más pequeño */
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            input, select {
+                font-size: 14px;
+            }
+
+            input[type="submit"] {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Formulario de Reservas</h2>
+        <form id="reservaForm">
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="room">Room</label>
+                <input type="text" id="room" name="room" placeholder="Número de habitación" required pattern="\d{4}" title="Ingrese un número de habitación de 4 dígitos">
+            </div>
+            <div class="form-group">
+                <label for="huesped">Huésped</label>
+                <input type="text" id="huesped" name="huesped" placeholder="Nombre del huésped" required>
+            </div>
+            <div class="form-group">
+                <label for="restaurante">Restaurante</label>
+                <select id="restaurante" name="restaurante" required>
+                    <option value="">Seleccione un restaurante</option>
+                    <option value="Himitsu">Himitsu</option>
+                    <option value="El Patio">El Patio</option>
+                    <option value="Bluewater Grill">Bluewater Grill</option>
+                    <option value="Olio">Olio</option>
+                    <option value="Bordeaux">Bordeaux</option>
+                    <option value="Hibachi">Hibachi</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hora">Hora</label>
+                <select id="hora" name="hora" required>
+                    <option value="">Seleccione un horario</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pax">PAX</label>
+                <input type="number" id="pax" name="pax" placeholder="Número de personas" required>
+            </div>
+            <div class="form-group">
+                <label for="notas">Notas</label>
+                <input type="text" id="notas" name="notas" placeholder="Notas adicionales">
+            </div>
+            <input type="submit" value="Reservar">
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2>Reservas</h2>
+        <table id="reservasTable">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Room</th>
+                    <th>Huésped</th>
+                    <th>Restaurante</th>
+                    <th>Hora</th>
+                    <th>PAX</th>
+                    <th>Notas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las reservas se agregarán aquí dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Capturamos el formulario y la tabla
+        const form = document.getElementById('reservaForm');
+        const reservasTable = document.getElementById('reservasTable').getElementsByTagName('tbody')[0];
+
+        // Opciones de horarios por restaurante
+        const horariosRestaurantes = {
+            "Himitsu": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+            "El Patio": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+            "Bluewater Grill": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+            "Olio": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+            "Bordeaux": ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"],
+            "Hibachi": ["6:00 PM", "7:15 PM", "8:30 PM", "9:45 PM"]
+        };
+
+        // Limites de pax por restaurante
+        const limitePax = {
+            "Himitsu": 8,
+            "El Patio": 8,
+            "Bluewater Grill": 8,
+            "Olio": 8,
+            "Bordeaux": 8,
+            "Hibachi": 10
+        };
+
+        // Almacenamos el total de pax por cada horario
+        const reservasPorHorario = {};
+
+        // Seleccionamos los elementos del restaurante y hora
+        const restauranteSelect = document.getElementById('restaurante');
+        const horaSelect = document.getElementById('hora');
+
+        // Función para actualizar los horarios según el restaurante seleccionado
+        restauranteSelect.addEventListener('change', function() {
+            const restauranteSeleccionado = this.value;
+
+            // Limpiamos los horarios previos
+            horaSelect.innerHTML = '<option value="">Seleccione un horario</option>';
+
+            // Verificamos si hay horarios disponibles para el restaurante seleccionado
+            if (horariosRestaurantes[restauranteSeleccionado]) {
+                const horarios = horariosRestaurantes[restauranteSeleccionado];
+
+                // Agregamos los horarios a la lista desplegable
+                horarios.forEach(function(horario) {
+                    const option = document.createElement('option');
+                    option.value = horario;
+                    option.textContent = horario;
+                    horaSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Manejamos el envío del formulario
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+
+            // Capturamos los valores de los campos
+            const fecha = document.getElementById('fecha').value;
+            const room = document.getElementById('room').value;
+            const huesped = document.getElementById('huesped').value;
+            const restaurante = restauranteSelect.value;
+            const hora = horaSelect.value;
+            const pax = parseInt(document.getElementById('pax').value);
+            const notas = document.getElementById('notas').value;
+
+            // Verificamos si el horario tiene suficiente capacidad
+            if (!reservasPorHorario[hora]) {
+                reservasPorHorario[hora] = 0;
+            }
+
+            if (reservasPorHorario[hora] + pax > limitePax[restaurante]) {
+                alert(`El horario ${hora} ya está lleno. Por favor, elija otro horario.`);
+                return;
+            }
+
+            // Agregamos el pax al horario
+            reservasPorHorario[hora] += pax;
+
+            // Crea el objeto de reserva
+            const reserva = {
+                fecha,
+                room,
+                huesped,
+                restaurante,
+                hora,
+                pax,
+                notas
+            };
+
+            // Envío de datos al servidor
+            fetch('/reservas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reserva)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error('Error al guardar la reserva');
+            })
+            .then(data => {
+                console.log(data); // Mensaje de éxito
+                form.reset();
+                horaSelect.innerHTML = '<option value="">Seleccione un horario</option>'; // Reiniciar horarios
+                // Actualizar tabla de reservas
+                const row = reservasTable.insertRow();
+                row.insertCell(0).textContent = fecha;
+                row.insertCell(1).textContent = room;
+                row.insertCell(2).textContent = huesped;
+                row.insertCell(3).textContent = restaurante;
+                row.insertCell(4).textContent = hora;
+                row.insertCell(5).textContent = pax;
+                row.insertCell(6).textContent = notas;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
