@@ -115,7 +115,7 @@ input:focus, textarea:focus {
 <body>
 
 <div class="container">
-    <h1 class="text-center">Reservas de Restaurante</h1>
+    <h1 class="text-center">Reservas VIP</h1>
     
     <div class="card">
         <div class="card-body">
@@ -416,24 +416,6 @@ function getTotalPax(date, place, time) {
             rows[i].style.display = found ? "" : "none";
         }
     });
-    function sortTableByDate() {
-  const table = document.getElementById('reservationsTable'); // Asegúrate de que el ID de tu tabla sea correcto
-  const rows = Array.from(table.rows).slice(1);  // Convertir las filas de la tabla en un array, excluyendo el encabezado
-
-  rows.sort((a, b) => {
-    const dateA = new Date(a.cells[0].textContent); // Suponiendo que la fecha está en la primera columna
-    const dateB = new Date(b.cells[0].textContent);
-    return dateB - dateA;  // Ordenar de la más nueva a la más vieja
-  });
-
-  // Reorganizar las filas en la tabla
-  rows.forEach(row => table.appendChild(row));
-}
-
-// Llamar a la función cuando se cargue la página
-window.onload = function() {
-  sortTableByDate();
-};
 
   </script>
 
