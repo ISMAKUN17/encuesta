@@ -73,19 +73,19 @@
             <form id="reservaForm">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="date">Date</label>
+                        <label for="date">Fecha</label>
                         <input type="date" class="form-control" id="date" required>
                     </div>
                     <div class="form-group">
-                        <label for="room">Room</label>
+                        <label for="room">Habitación</label>
                         <input type="number" class="form-control" id="room" min="1101" max="3493" required>
                     </div>
                     <div class="form-group">
-                        <label for="name">Name</label>
+                        <label for="name">Nombre</label>
                         <input type="text" class="form-control" id="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="place">Place</label>
+                        <label for="place">Lugar</label>
                         <select class="form-control" id="place" required>
                             <option value="">Selecciona un lugar</option>
                             <option value="El Patio">El Patio</option>
@@ -97,17 +97,17 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="time">Time</label>
+                        <label for="time">Hora</label>
                         <select class="form-control" id="time" required>
                             <option value="">Selecciona una hora</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="pax">Pax</label>
+                        <label for="pax">Personas</label>
                         <input type="number" class="form-control" id="pax" required>
                     </div>
                     <div class="form-group">
-                        <label for="notes">Notes</label>
+                        <label for="notes">Notas</label>
                         <textarea class="form-control" id="notes" rows="1" maxlength="15"></textarea>
                     </div>
                 </div>
@@ -129,13 +129,13 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Room</th>
-                            <th>Name</th>
-                            <th>Place</th>
-                            <th>Time</th>
-                            <th>Pax</th>
-                            <th>Notes</th>
+                            <th>Fecha</th>
+                            <th>Habitación</th>
+                            <th>Nombre</th>
+                            <th>Lugar</th>
+                            <th>Hora</th>
+                            <th>Personas</th>
+                            <th>Notas</th>
                         </tr>
                     </thead>
                     <tbody id="reservasList">
@@ -234,85 +234,80 @@
 
     function actualizarDisponibilidad() {
         const date = dateInput.value;
-        const place = placeSelect.value;
+        const room = roomInput.value;
+        const selectedPlace = placeSelect.value;
         const time = timeSelect.value;
-
-        if (date && place && time) {
-            onValue(ref(db, 'reservas/'), (snapshot) => {
-                let totalPax = 0;
-                snapshot.forEach((childSnapshot) => {
-                    const reserva = childSnapshot.val();
-                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
-                        totalPax += reserva.pax;
-                    }
-                });
-
-                const maxPax = place === "Hibachi" ? 10 : 8;
-                const availablePax = maxPax - totalPax; // Total disponible considerando el límite por horario
-
-                availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
-            });
-        } else {
-            availablePaxDisplay.textContent = "";
+        
+        if (!date || !room || !selectedPlace || !time) {
+            availablePaxDisplay.textContent = '';
+            return;
         }
+
+        const reservasRef = ref(db, 'reservas/');
+        onValue(reservasRef, (snapshot) => {
+            let totalPax = 0;
+            snapshot.forEach((childSnapshot) => {
+                const reserva = childSnapshot.val();
+                if (reserva.date === date && reserva.room === room && reserva.place === selectedPlace && reserva.time === time) {
+                    totalPax += Number(reserva.pax);
+                }
+            });
+            const availablePax = 6 - totalPax; // Asumiendo un máximo de 6 pax por reserva
+            availablePaxDisplay.textContent = `Personas disponibles para esta reserva: ${availablePax}`;
+        });
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        agregarReserva();
+    });
 
+    function agregarReserva() {
         const date = dateInput.value;
         const room = roomInput.value;
         const name = document.getElementById('name').value;
         const place = placeSelect.value;
         const time = timeSelect.value;
-        const pax = parseInt(paxInput.value);
+        const pax = paxInput.value;
         const notes = document.getElementById('notes').value;
 
-        // Validar que el room sea un número entre 1101 y 3493
-        if (room < 1101 || room > 3493) {
-            alert("La habitacion ingresada no pertenece al Secrets Royal Beach.");
-            return;
-        }
-
-        // Validar el límite de pax según el lugar y horario
-        validarReservas(date, place, time, pax)
-            .then(valid => {
-                if (valid) {
-                    const reserva = { date, room, name, place, time, pax, notes };
-                    agregarReserva(reserva);
-                    form.reset(); // Reiniciar el formulario
-                    dateInput.value = today; // Resetear la fecha al día actual
-                    availablePaxDisplay.textContent = ""; // Limpiar mensaje de disponibilidad
-                } else {
-                    alert("Lo siento, ya no hay disponibilidad para esa reserva.");
-                }
-            });
-    });
-
-    function agregarReserva(reserva) {
-        push(ref(db, 'reservas/'), reserva);
+        const reserva = { date, room, name, place, time, pax, notes };
+        
+        const newReservaRef = push(ref(db, 'reservas/'), reserva);
         alert("Tu reserva fue agregada correctamente!");
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${reserva.date}</td>
+            <td>${reserva.room}</td>
+            <td>${reserva.name}</td>
+            <td>${reserva.place}</td>
+            <td>${reserva.time}</td>
+            <td>${reserva.pax}</td>
+            <td>${reserva.notes || 'N/A'}</td>
+            <td><button onclick="eliminarReserva('${newReservaRef.key}')" class="btn btn-danger btn-sm">Eliminar</button></td>
+        `;
+        reservasList.appendChild(row);
+        form.reset();
+        availablePaxDisplay.textContent = '';
     }
 
-    async function validarReservas(date, place, time, pax) {
-        return new Promise((resolve) => {
-            onValue(ref(db, 'reservas/'), (snapshot) => {
-                let totalPax = 0;
-                snapshot.forEach((childSnapshot) => {
-                    const reserva = childSnapshot.val();
-                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
-                        totalPax += reserva.pax;
-                    }
-                });
-
-                let maxPax = place === "Hibachi" ? 10 : 8; // 10 para Hibachi, 8 para los demás
-                resolve(totalPax + pax <= maxPax); // Verifica si la nueva reserva excede el límite
+    function eliminarReserva(reservaId) {
+        const reservaRef = ref(db, `reservas/${reservaId}`);
+        remove(reservaRef)
+            .then(() => {
+                alert("Reserva eliminada correctamente.");
+                location.reload(); // Recargar para actualizar la tabla
+            })
+            .catch((error) => {
+                console.error("Error al eliminar la reserva: ", error);
             });
-        });
     }
 
-    onValue(ref(db, 'reservas/'), (snapshot) => {
-        reservasList.innerHTML = '';
+    // Cargar reservas desde Firebase
+    const reservasRef = ref(db, 'reservas/');
+    onValue(reservasRef, (snapshot) => {
+        reservasList.innerHTML = ''; // Limpiar la tabla antes de agregar las reservas
         snapshot.forEach((childSnapshot) => {
             const reserva = childSnapshot.val();
             const row = document.createElement('tr');
@@ -324,49 +319,40 @@
                 <td>${reserva.time}</td>
                 <td>${reserva.pax}</td>
                 <td>${reserva.notes || 'N/A'}</td>
+                <td><button onclick="eliminarReserva('${childSnapshot.key}')" class="btn btn-danger btn-sm">Eliminar</button></td>
             `;
-            row.addEventListener('click', () => mostrarDetallesReserva(reserva));
+            row.addEventListener('click', () => mostrarDetalles(reserva));
             reservasList.appendChild(row);
         });
     });
 
-    function mostrarDetallesReserva(reserva) {
+    function mostrarDetalles(reserva) {
         modalBody.innerHTML = `
-            <p><strong>Date:</strong> ${reserva.date}</p>
-            <p><strong>Room:</strong> ${reserva.room}</p>
-            <p><strong>Name:</strong> ${reserva.name}</p>
-            <p><strong>Place:</strong> ${reserva.place}</p>
-            <p><strong>Time:</strong> ${reserva.time}</p>
-            <p><strong>Pax:</strong> ${reserva.pax}</p>
-            <p><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
+            <p><strong>Fecha:</strong> ${reserva.date}</p>
+            <p><strong>Habitación:</strong> ${reserva.room}</p>
+            <p><strong>Nombre:</strong> ${reserva.name}</p>
+            <p><strong>Lugar:</strong> ${reserva.place}</p>
+            <p><strong>Hora:</strong> ${reserva.time}</p>
+            <p><strong>Personas:</strong> ${reserva.pax}</p>
+            <p><strong>Notas:</strong> ${reserva.notes || 'N/A'}</p>
         `;
         $('#reservaModal').modal('show');
     }
 
-    searchInput.addEventListener('keyup', () => {
+    // Búsqueda en la tabla de reservas
+    searchInput.addEventListener('input', () => {
         const filter = searchInput.value.toLowerCase();
         const rows = reservasList.getElementsByTagName('tr');
-
-        for (let i = 0; i < rows.length; i++) {
-            const cells = rows[i].getElementsByTagName('td');
-            let found = false;
-
-            for (let j = 0; j < cells.length; j++) {
-                if (cells[j]) {
-                    const textValue = cells[j].textContent || cells[j].innerText;
-                    if (textValue.toLowerCase().indexOf(filter) > -1) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            rows[i].style.display = found ? "" : "none";
-        }
+        Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            const matches = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
+            row.style.display = matches ? '' : 'none';
+        });
     });
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
