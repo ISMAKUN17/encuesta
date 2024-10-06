@@ -232,30 +232,34 @@
         });
     }
 
-    function actualizarDisponibilidad() {
-        const date = dateInput.value;
-        const place = placeSelect.value;
-        const time = timeSelect.value;
+ function actualizarDisponibilidad() {
+  const date = dateInput.value;
+  const place = placeSelect.value;
+  const time = timeSelect.value;
 
-        if (date && place && time) {
-            onValue(ref(db, 'reservas/'), (snapshot) => {
-                let totalPax = 0;
-                snapshot.forEach((childSnapshot) => {
-                    const reserva = childSnapshot.val();
-                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
-                        totalPax += reserva.pax;
-                    }
-                });
+  if (date && place && time) {
+    const maxPax = place === "Hibachi" ? 10 : 8;
+    const totalPax = getTotalPax(date, place, time);
+    const availablePax = maxPax - totalPax;
 
-                const maxPax = place === "Hibachi" ? 10 : 8;
-                const availablePax = maxPax - totalPax; // Total disponible considerando el límite por horario
+    availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
+  } else {
+    availablePaxDisplay.textContent = "";
+  }
+}
 
-                availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
-            });
-        } else {
-            availablePaxDisplay.textContent = "";
-        }
-    }
+function getTotalPax(date, place, time) {
+  let totalPax = 0;
+  onValue(ref(db, 'reservas/'), (snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+      const reserva = childSnapshot.val();
+      if (reserva.date === date && reserva.place === place && reserva.time === time) {
+        totalPax += reserva.pax;
+      }
+    });
+  });
+  return totalPax;
+}
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
