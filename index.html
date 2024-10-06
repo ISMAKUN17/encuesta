@@ -3,356 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&display=swap">
     <title>Reservas de Restaurante</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
         }
-        .container {
-            margin-top: 50px;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-        .form-control {
-            max-width: 100%;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        tr {
-            cursor: pointer;
-        }
-        td, th {
+        h1 {
             text-align: center;
-            padding: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
         }
         th {
-            background-color: #007bff;
+            background-color: #4CAF50;
             color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1;
         }
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #f2f2f2;
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
+        button:hover {
+            background-color: #45a049;
         }
-        @media (max-width: 767px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+        #reservationForm {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .table-responsive {
-            overflow-x: auto;
-        }
-        .available-pax {
-            font-weight: bold;
-            color: green;
+        .error {
+            color: red;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1 class="text-center">Reservas de Restaurante</h1>
-    
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Agregar Reserva</h5>
-            <form id="reservaForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="date">Fecha</label>
-                        <input type="date" class="form-control" id="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="room">Habitación</label>
-                        <input type="number" class="form-control" id="room" min="1101" max="3493" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="name">Nombre</label>
-                        <input type="text" class="form-control" id="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="place">Lugar</label>
-                        <select class="form-control" id="place" required>
-                            <option value="">Selecciona un lugar</option>
-                            <option value="El Patio">El Patio</option>
-                            <option value="Bluewater Grill">Bluewater Grill</option>
-                            <option value="Bordeaux">Bordeaux</option>
-                            <option value="Himitsu">Himitsu</option>
-                            <option value="Hibachi">Hibachi</option>
-                            <option value="Olio">Olio</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="time">Hora</label>
-                        <select class="form-control" id="time" required>
-                            <option value="">Selecciona una hora</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="pax">Personas</label>
-                        <input type="number" class="form-control" id="pax" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="notes">Notas</label>
-                        <textarea class="form-control" id="notes" rows="1" maxlength="15"></textarea>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary mt-3">Agregar Reserva</button>
-            </form>
-            <div class="mt-3">
-                <span class="available-pax" id="availablePax"></span>
-            </div>
-        </div>
+    <h1>Reservas de Restaurante</h1>
+    <button onclick="toggleReservationForm()">Agregar Reserva</button>
+    <div id="reservationForm">
+        <h2>Formulario de Reserva</h2>
+        <label for="restaurant">Restaurante:</label>
+        <select id="restaurant">
+            <option value="Restaurante 1">Restaurante 1</option>
+            <option value="Restaurante 2">Restaurante 2</option>
+            <option value="Hibachi">Hibachi</option>
+        </select>
+        <br>
+        <label for="date">Fecha:</label>
+        <input type="date" id="date" required>
+        <br>
+        <label for="time">Hora:</label>
+        <input type="time" id="time" required>
+        <br>
+        <label for="pax">Cantidad de Pax:</label>
+        <input type="number" id="pax" min="1" max="8" required>
+        <br>
+        <button onclick="addReservation()">Agregar Reserva</button>
+        <p class="error" id="error-message"></p>
     </div>
+    <table id="reservationsTable">
+        <thead>
+            <tr>
+                <th>Restaurante</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Pax</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title d-flex justify-content-between align-items-center">
-                Reservas Hechas
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." style="width: 250px;">
-            </h5>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Habitación</th>
-                            <th>Nombre</th>
-                            <th>Lugar</th>
-                            <th>Hora</th>
-                            <th>Personas</th>
-                            <th>Notas</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reservasList">
-                        <!-- Aquí se agregarán las reservas -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        const reservations = [];
 
-<!-- Modal para mostrar información de la reserva -->
-<div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reservaModalLabel">Detalles de la Reserva</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Aquí se mostrará la información de la reserva -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCR7ODl0gz3S9ca89-VxVJ1uZoVlSE0bgo",
-        authDomain: "vipreservas-6ed68.firebaseapp.com",
-        databaseURL: "https://vipreservas-6ed68-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "vipreservas-6ed68",
-        storageBucket: "vipreservas-6ed68.appspot.com",
-        messagingSenderId: "449237340285",
-        appId: "1:449237340285:web:8e7f8205bbb52d2821e114"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const form = document.getElementById('reservaForm');
-    const reservasList = document.getElementById('reservasList');
-    const modalBody = document.getElementById('modalBody');
-    const searchInput = document.getElementById('searchInput');
-    const placeSelect = document.getElementById('place');
-    const timeSelect = document.getElementById('time');
-    const dateInput = document.getElementById('date');
-    const roomInput = document.getElementById('room');
-    const paxInput = document.getElementById('pax');
-    const availablePaxDisplay = document.getElementById('availablePax');
-
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
-
-    placeSelect.addEventListener('change', () => {
-        const selectedPlace = placeSelect.value;
-        actualizarHorarios(selectedPlace);
-        actualizarDisponibilidad();
-    });
-
-    timeSelect.addEventListener('change', actualizarDisponibilidad);
-    dateInput.addEventListener('change', actualizarDisponibilidad);
-
-    function actualizarHorarios(place) {
-        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
-        let horarios;
-        switch (place) {
-            case "Hibachi":
-                horarios = ["6:00 PM", "7:15 PM", "8:30 PM", "9:45 PM"];
-                break;
-            case "El Patio":
-            case "Bluewater Grill":
-            case "Bordeaux":
-            case "Himitsu":
-            case "Olio":
-                horarios = ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"];
-                break;
-            default:
-                horarios = [];
-        }
-        horarios.forEach(horario => {
-            const option = document.createElement('option');
-            option.value = horario;
-            option.textContent = horario;
-            timeSelect.appendChild(option);
-        });
-    }
-
-    function actualizarDisponibilidad() {
-        const date = dateInput.value;
-        const room = roomInput.value;
-        const selectedPlace = placeSelect.value;
-        const time = timeSelect.value;
-        
-        if (!date || !room || !selectedPlace || !time) {
-            availablePaxDisplay.textContent = '';
-            return;
+        function toggleReservationForm() {
+            const form = document.getElementById('reservationForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
 
-        const reservasRef = ref(db, 'reservas/');
-        onValue(reservasRef, (snapshot) => {
+        function addReservation() {
+            const restaurant = document.getElementById('restaurant').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const pax = parseInt(document.getElementById('pax').value);
+            const errorMessage = document.getElementById('error-message');
+
+            const availability = checkAvailability(restaurant, date, time, pax);
+            if (!availability) {
+                errorMessage.textContent = "No hay suficiente disponibilidad para la reserva solicitada.";
+                return;
+            }
+
+            const reservation = { restaurant, date, time, pax };
+            reservations.push(reservation);
+            displayReservations();
+            clearForm();
+        }
+
+        function checkAvailability(restaurant, date, time, pax) {
             let totalPax = 0;
-            snapshot.forEach((childSnapshot) => {
-                const reserva = childSnapshot.val();
-                if (reserva.date === date && reserva.room === room && reserva.place === selectedPlace && reserva.time === time) {
-                    totalPax += Number(reserva.pax);
+
+            for (const reservation of reservations) {
+                if (reservation.date === date && reservation.time === time && reservation.restaurant === restaurant) {
+                    totalPax += reservation.pax;
                 }
+            }
+
+            if (restaurant === "Hibachi") {
+                // Hibachi puede aceptar más pax (suponiendo un límite más alto)
+                return totalPax + pax <= 8;  // Cambiar el límite según sea necesario
+            } else {
+                // Otros restaurantes
+                return totalPax + pax <= 8;  // Máximo de 8 pax
+            }
+        }
+
+        function displayReservations() {
+            const tbody = document.getElementById('reservationsTable').querySelector('tbody');
+            tbody.innerHTML = '';
+            reservations.forEach(reservation => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${reservation.restaurant}</td>
+                    <td>${reservation.date}</td>
+                    <td>${reservation.time}</td>
+                    <td>${reservation.pax}</td>
+                `;
+                tbody.appendChild(row);
             });
-            const availablePax = 6 - totalPax; // Asumiendo un máximo de 6 pax por reserva
-            availablePaxDisplay.textContent = `Personas disponibles para esta reserva: ${availablePax}`;
-        });
-    }
+        }
 
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        agregarReserva();
-    });
-
-    function agregarReserva() {
-        const date = dateInput.value;
-        const room = roomInput.value;
-        const name = document.getElementById('name').value;
-        const place = placeSelect.value;
-        const time = timeSelect.value;
-        const pax = paxInput.value;
-        const notes = document.getElementById('notes').value;
-
-        const reserva = { date, room, name, place, time, pax, notes };
-        
-        const newReservaRef = push(ref(db, 'reservas/'), reserva);
-        alert("Tu reserva fue agregada correctamente!");
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${reserva.date}</td>
-            <td>${reserva.room}</td>
-            <td>${reserva.name}</td>
-            <td>${reserva.place}</td>
-            <td>${reserva.time}</td>
-            <td>${reserva.pax}</td>
-            <td>${reserva.notes || 'N/A'}</td>
-            <td><button onclick="eliminarReserva('${newReservaRef.key}')" class="btn btn-danger btn-sm">Eliminar</button></td>
-        `;
-        reservasList.appendChild(row);
-        form.reset();
-        availablePaxDisplay.textContent = '';
-    }
-
-    function eliminarReserva(reservaId) {
-        const reservaRef = ref(db, `reservas/${reservaId}`);
-        remove(reservaRef)
-            .then(() => {
-                alert("Reserva eliminada correctamente.");
-                location.reload(); // Recargar para actualizar la tabla
-            })
-            .catch((error) => {
-                console.error("Error al eliminar la reserva: ", error);
-            });
-    }
-
-    // Cargar reservas desde Firebase
-    const reservasRef = ref(db, 'reservas/');
-    onValue(reservasRef, (snapshot) => {
-        reservasList.innerHTML = ''; // Limpiar la tabla antes de agregar las reservas
-        snapshot.forEach((childSnapshot) => {
-            const reserva = childSnapshot.val();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${reserva.date}</td>
-                <td>${reserva.room}</td>
-                <td>${reserva.name}</td>
-                <td>${reserva.place}</td>
-                <td>${reserva.time}</td>
-                <td>${reserva.pax}</td>
-                <td>${reserva.notes || 'N/A'}</td>
-                <td><button onclick="eliminarReserva('${childSnapshot.key}')" class="btn btn-danger btn-sm">Eliminar</button></td>
-            `;
-            row.addEventListener('click', () => mostrarDetalles(reserva));
-            reservasList.appendChild(row);
-        });
-    });
-
-    function mostrarDetalles(reserva) {
-        modalBody.innerHTML = `
-            <p><strong>Fecha:</strong> ${reserva.date}</p>
-            <p><strong>Habitación:</strong> ${reserva.room}</p>
-            <p><strong>Nombre:</strong> ${reserva.name}</p>
-            <p><strong>Lugar:</strong> ${reserva.place}</p>
-            <p><strong>Hora:</strong> ${reserva.time}</p>
-            <p><strong>Personas:</strong> ${reserva.pax}</p>
-            <p><strong>Notas:</strong> ${reserva.notes || 'N/A'}</p>
-        `;
-        $('#reservaModal').modal('show');
-    }
-
-    // Búsqueda en la tabla de reservas
-    searchInput.addEventListener('input', () => {
-        const filter = searchInput.value.toLowerCase();
-        const rows = reservasList.getElementsByTagName('tr');
-        Array.from(rows).forEach(row => {
-            const cells = row.getElementsByTagName('td');
-            const matches = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
-            row.style.display = matches ? '' : 'none';
-        });
-    });
-</script>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        function clearForm() {
+            document.getElementById('restaurant').value = "Restaurante 1";
+            document.getElementById('date').value = '';
+            document.getElementById('time').value = '';
+            document.getElementById('pax').value = '';
+            document.getElementById('error-message').textContent = '';
+        }
+    </script>
 </body>
 </html>
