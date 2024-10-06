@@ -109,34 +109,6 @@ input:focus, textarea:focus {
 #addButton:hover {
   transform: scale(1.1);
 }
-/* Estilos del toast */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.toast.error {
-  background-color: #f44336;
-}
-
-.toast.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.toast.hidden {
-  opacity: 0;
-  visibility: hidden;
-}
 
     </style>
 </head>
@@ -244,11 +216,6 @@ input:focus, textarea:focus {
         </div>
     </div>
 </div>
-<!-- Contenedor de notificaciones -->
-<div id="toast" class="toast hidden">
-  <span id="toastMessage"></span>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
@@ -449,35 +416,7 @@ function getTotalPax(date, place, time) {
             rows[i].style.display = found ? "" : "none";
         }
     });
-    // Función para mostrar el toast
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  const toastMessage = document.getElementById('toastMessage');
-  
-  // Establecer mensaje y tipo
-  toastMessage.textContent = message;
-  toast.classList.remove('hidden', 'error');
-  
-  // Si es un mensaje de error, agregar clase 'error'
-  if (type === 'error') {
-    toast.classList.add('error');
-  }
-  
-  // Mostrar toast
-  toast.classList.add('show');
-  
-  // Ocultar el toast después de 3 segundos
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.classList.add('hidden'), 300);  // Para que la transición se vea suave
-  }, 3000);
-}
-
-// Ejemplo de cómo usar esta función:
-showToast('La reserva ha sido aceptada');  // Para mensaje de éxito
-showToast('No hay espacio disponible', 'error');  // Para mensaje de error
-
-</script>
+  </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
