@@ -416,41 +416,6 @@ function getTotalPax(date, place, time) {
             rows[i].style.display = found ? "" : "none";
         }
     });
-function groupByPlace() {
-  const table = document.getElementById('reservationsTable');  // Obtener la tabla
-  const tbody = table.querySelector('tbody');  // Obtener el cuerpo de la tabla
-  const rows = Array.from(tbody.rows);  // Convertir las filas de la tabla en un array
-  
-  let currentPlace = '';  // Variable para rastrear el lugar actual
-
-  // Recorrer las filas y verificar el lugar de la reserva
-  rows.forEach((row, index) => {
-    const place = row.cells[1].textContent;  // Suponiendo que el lugar está en la segunda columna
-
-    // Si el lugar cambia, insertar un separador
-    if (place !== currentPlace) {
-      currentPlace = place;
-
-      // Crear una nueva fila para el separador
-      const separatorRow = document.createElement('tr');
-      const separatorCell = document.createElement('td');
-      separatorCell.colSpan = table.rows[0].cells.length;  // Abarcar todas las columnas
-      separatorCell.textContent = `Lugar: ${currentPlace}`;  // Texto del separador
-      separatorCell.style.fontWeight = 'bold';  // Estilizar el separador (puedes modificar esto)
-      separatorCell.style.backgroundColor = '#f0f0f0';  // Color de fondo (puedes cambiarlo)
-      separatorRow.appendChild(separatorCell);
-
-      // Insertar el separador antes de la fila actual
-      tbody.insertBefore(separatorRow, row);
-    }
-  });
-}
-
-// Llamar a la función cuando se cargue la página
-window.onload = function() {
-  groupByPlace();
-};
-
   </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
