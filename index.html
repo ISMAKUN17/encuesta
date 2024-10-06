@@ -235,64 +235,85 @@
     function actualizarDisponibilidad() {
         const date = dateInput.value;
         const place = placeSelect.value;
-        const room = roomInput.value;
-        const pax = paxInput.value;
+        const time = timeSelect.value;
 
-        if (!date || !place || !room || !pax) {
-            availablePaxDisplay.textContent = '';
+        if (date && place && time) {
+            onValue(ref(db, 'reservas/'), (snapshot) => {
+                let totalPax = 0;
+                snapshot.forEach((childSnapshot) => {
+                    const reserva = childSnapshot.val();
+                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
+                        totalPax += reserva.pax;
+                    }
+                });
+
+                const maxPax = place === "Hibachi" ? 10 : 8;
+                const availablePax = maxPax - totalPax; // Total disponible considerando el límite por horario
+
+                availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
+            });
+        } else {
+            availablePaxDisplay.textContent = "";
+        }
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const date = dateInput.value;
+        const room = roomInput.value;
+        const name = document.getElementById('name').value;
+        const place = placeSelect.value;
+        const time = timeSelect.value;
+        const pax = parseInt(paxInput.value);
+        const notes = document.getElementById('notes').value;
+
+        // Validar que el room sea un número entre 1101 y 3493
+        if (room < 1101 || room > 3493) {
+            alert("La habitacion ingresada no pertenece al Secrets Royal Beach.");
             return;
         }
 
-        const reservasRef = ref(db, 'reservas/');
-        onValue(reservasRef, (snapshot) => {
-            let totalReservas = 0;
-            snapshot.forEach(childSnapshot => {
-                const reserva = childSnapshot.val();
-                if (reserva.date === date && reserva.place === place && reserva.room == room) {
-                    totalReservas += parseInt(reserva.pax);
+        // Validar el límite de pax según el lugar y horario
+        validarReservas(date, place, time, pax)
+            .then(valid => {
+                if (valid) {
+                    const reserva = { date, room, name, place, time, pax, notes };
+                    agregarReserva(reserva);
+                    form.reset(); // Reiniciar el formulario
+                    dateInput.value = today; // Resetear la fecha al día actual
+                    availablePaxDisplay.textContent = ""; // Limpiar mensaje de disponibilidad
+                } else {
+                    alert("Lo siento, ya no hay disponibilidad para esa reserva.");
                 }
-            });
-            const maxPax = 8; // Capacidad máxima
-            const availablePax = maxPax - totalReservas;
-
-            if (availablePax >= 0) {
-                availablePaxDisplay.textContent = `Pax disponibles: ${availablePax}`;
-                paxInput.setAttribute('max', availablePax);
-            } else {
-                availablePaxDisplay.textContent = 'No hay disponibilidad suficiente';
-                paxInput.setAttribute('max', 0);
-            }
-        });
-    }
-
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        
-        const reserva = {
-            date: dateInput.value,
-            room: roomInput.value,
-            name: nameInput.value,
-            place: placeSelect.value,
-            time: timeSelect.value,
-            pax: paxInput.value,
-            notes: notesInput.value || 'Sin notas'
-        };
-
-        push(ref(db, 'reservas/'), reserva)
-            .then(() => {
-                alert('Reserva agregada correctamente');
-                form.reset();
-                availablePaxDisplay.textContent = '';
-            })
-            .catch(error => {
-                console.error("Error al agregar reserva: ", error);
             });
     });
 
-    // Mostrar reservas
+    function agregarReserva(reserva) {
+        push(ref(db, 'reservas/'), reserva);
+        alert("Tu reserva fue agregada correctamente!");
+    }
+
+    async function validarReservas(date, place, time, pax) {
+        return new Promise((resolve) => {
+            onValue(ref(db, 'reservas/'), (snapshot) => {
+                let totalPax = 0;
+                snapshot.forEach((childSnapshot) => {
+                    const reserva = childSnapshot.val();
+                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
+                        totalPax += reserva.pax;
+                    }
+                });
+
+                let maxPax = place === "Hibachi" ? 10 : 8; // 10 para Hibachi, 8 para los demás
+                resolve(totalPax + pax <= maxPax); // Verifica si la nueva reserva excede el límite
+            });
+        });
+    }
+
     onValue(ref(db, 'reservas/'), (snapshot) => {
         reservasList.innerHTML = '';
-        snapshot.forEach(childSnapshot => {
+        snapshot.forEach((childSnapshot) => {
             const reserva = childSnapshot.val();
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -302,7 +323,7 @@
                 <td>${reserva.place}</td>
                 <td>${reserva.time}</td>
                 <td>${reserva.pax}</td>
-                <td>${reserva.notes}</td>
+                <td>${reserva.notes || 'N/A'}</td>
             `;
             row.addEventListener('click', () => mostrarDetallesReserva(reserva));
             reservasList.appendChild(row);
@@ -311,38 +332,41 @@
 
     function mostrarDetallesReserva(reserva) {
         modalBody.innerHTML = `
-            <p><strong>Fecha:</strong> ${reserva.date}</p>
-            <p><strong>Habitación:</strong> ${reserva.room}</p>
-            <p><strong>Nombre:</strong> ${reserva.name}</p>
-            <p><strong>Lugar:</strong> ${reserva.place}</p>
-            <p><strong>Hora:</strong> ${reserva.time}</p>
+            <p><strong>Date:</strong> ${reserva.date}</p>
+            <p><strong>Room:</strong> ${reserva.room}</p>
+            <p><strong>Name:</strong> ${reserva.name}</p>
+            <p><strong>Place:</strong> ${reserva.place}</p>
+            <p><strong>Time:</strong> ${reserva.time}</p>
             <p><strong>Pax:</strong> ${reserva.pax}</p>
-            <p><strong>Notas:</strong> ${reserva.notes}</p>
+            <p><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
         `;
         $('#reservaModal').modal('show');
     }
 
-    // Búsqueda
-    searchInput.addEventListener('input', () => {
+    searchInput.addEventListener('keyup', () => {
         const filter = searchInput.value.toLowerCase();
         const rows = reservasList.getElementsByTagName('tr');
+
         for (let i = 0; i < rows.length; i++) {
             const cells = rows[i].getElementsByTagName('td');
             let found = false;
+
             for (let j = 0; j < cells.length; j++) {
-                if (cells[j].textContent.toLowerCase().includes(filter)) {
-                    found = true;
-                    break;
+                if (cells[j]) {
+                    const textValue = cells[j].textContent || cells[j].innerText;
+                    if (textValue.toLowerCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
                 }
             }
-            rows[i].style.display = found ? '' : 'none';
+            rows[i].style.display = found ? "" : "none";
         }
     });
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 </body>
 </html>
