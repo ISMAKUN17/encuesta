@@ -1,173 +1,330 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> 
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservations</title>
+    <title>Reservas de Restaurante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
         }
-        h1 {
-            text-align: center;
+        .container {
+            margin-top: 50px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .card {
             margin-bottom: 20px;
         }
-        table, th, td {
-            border: 1px solid #ddd;
+        .form-control {
+            max-width: 100%;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        tr {
+            cursor: pointer;
+        }
+        td, th {
+            text-align: center;
+            padding: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #007bff;
+            color: white;
             position: sticky;
             top: 0;
+            z-index: 1;
         }
-        input {
-            padding: 8px;
-            margin: 10px 0;
-            display: block;
-            width: 100%;
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2;
         }
-        .form-popup {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border: 2px solid #ddd;
-            background-color: white;
-            padding: 20px;
-            z-index: 9;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
         }
-        .form-popup input[type="number"] {
-            max-width: 150px;
+        @media (max-width: 767px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        .open-button, .submit-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+        .table-responsive {
+            overflow-x: auto;
         }
-        .open-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            border-radius: 50%;
-            font-size: 30px;
+        .available-pax {
+            font-weight: bold;
+            color: green;
         }
     </style>
 </head>
 <body>
 
-<h1>RESERVAS VIP</h1>
+<div class="container">
+    <h1 class="text-center">Reservas de Restaurante</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Agregar Reserva</h5>
+            <form id="reservaForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room">Room</label>
+                        <input type="number" class="form-control" id="room" min="1101" max="3493" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="place">Place</label>
+                        <select class="form-control" id="place" required>
+                            <option value="">Selecciona un lugar</option>
+                            <option value="El Patio">El Patio</option>
+                            <option value="Bluewater Grill">Bluewater Grill</option>
+                            <option value="Bordeaux">Bordeaux</option>
+                            <option value="Himitsu">Himitsu</option>
+                            <option value="Hibachi">Hibachi</option>
+                            <option value="Olio">Olio</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Time</label>
+                        <select class="form-control" id="time" required>
+                            <option value="">Selecciona una hora</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pax">Pax</label>
+                        <input type="number" class="form-control" id="pax" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea class="form-control" id="notes" rows="1" maxlength="15"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Agregar Reserva</button>
+            </form>
+            <div class="mt-3">
+                <span class="available-pax" id="availablePax"></span>
+            </div>
+        </div>
+    </div>
 
-<!-- Tabla de Reservas -->
-<table>
-    <thead>
-        <tr>
-            <th>Room</th>
-            <th>Name</th>
-            <th>Notes</th>
-        </tr>
-    </thead>
-    <tbody id="reservationTableBody">
-        <!-- Las filas se generarán dinámicamente aquí -->
-    </tbody>
-</table>
-
-<!-- Botón flotante para abrir el formulario -->
-<button class="open-button" onclick="openForm()">+</button>
-
-<!-- Formulario en un popup -->
-<div class="form-popup" id="reservationForm">
-    <h2>Add Reservation</h2>
-    <label for="room">Room (Max: 3493)</label>
-    <input type="number" id="room" name="room" min="1" max="3493" required>
-
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" required>
-
-    <label for="notes">Notes (Max 15 characters)</label>
-    <input type="text" id="notes" name="notes" maxlength="15" required>
-
-    <button class="submit-button" onclick="submitReservation()">Submit</button>
-    <button class="submit-button" onclick="closeForm()">Close</button>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title d-flex justify-content-between align-items-center">
+                Reservas Hechas
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." style="width: 250px;">
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Room</th>
+                            <th>Name</th>
+                            <th>Place</th>
+                            <th>Time</th>
+                            <th>Pax</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservasList">
+                        <!-- Aquí se agregarán las reservas -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script>
-// Arreglo para almacenar las reservas
-let reservations = [];
+<!-- Modal para mostrar información de la reserva -->
+<div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservaModalLabel">Detalles de la Reserva</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Aquí se mostrará la información de la reserva -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-// Función para ordenar por número de habitación
-function sortReservations() {
-    reservations.sort((a, b) => a.room - b.room); // Ordena por número de habitación
-    updateTable(); // Actualiza la tabla después de ordenar
-}
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
 
-// Función para actualizar la tabla con las reservas ordenadas
-function updateTable() {
-    const tableBody = document.getElementById("reservationTableBody");
-    tableBody.innerHTML = ""; // Limpia la tabla
+    const firebaseConfig = {
+        apiKey: "AIzaSyCR7ODl0gz3S9ca89-VxVJ1uZoVlSE0bgo",
+        authDomain: "vipreservas-6ed68.firebaseapp.com",
+        databaseURL: "https://vipreservas-6ed68-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "vipreservas-6ed68",
+        storageBucket: "vipreservas-6ed68.appspot.com",
+        messagingSenderId: "449237340285",
+        appId: "1:449237340285:web:8e7f8205bbb52d2821e114"
+    };
 
-    reservations.forEach(reservation => {
-        let row = `<tr>
-                      <td>${reservation.room}</td>
-                      <td>${reservation.name}</td>
-                      <td>${reservation.notes}</td>
-                   </tr>`;
-        tableBody.innerHTML += row; // Añade filas a la tabla
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const form = document.getElementById('reservaForm');
+    const reservasList = document.getElementById('reservasList');
+    const modalBody = document.getElementById('modalBody');
+    const searchInput = document.getElementById('searchInput');
+    const placeSelect = document.getElementById('place');
+    const timeSelect = document.getElementById('time');
+    const dateInput = document.getElementById('date');
+    const roomInput = document.getElementById('room');
+    const paxInput = document.getElementById('pax');
+    const availablePaxDisplay = document.getElementById('availablePax');
+
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+
+    placeSelect.addEventListener('change', () => {
+        const selectedPlace = placeSelect.value;
+        actualizarHorarios(selectedPlace);
+        actualizarDisponibilidad();
     });
-}
 
-// Función para agregar una nueva reserva
-function addReservation(room, name, notes) {
-    reservations.push({ room, name, notes });
-    sortReservations(); // Ordena automáticamente al agregar una nueva reserva
-}
+    timeSelect.addEventListener('change', actualizarDisponibilidad);
+    dateInput.addEventListener('change', actualizarDisponibilidad);
 
-// Función para manejar el envío del formulario
-function submitReservation() {
-    const room = document.getElementById("room").value;
-    const name = document.getElementById("name").value;
-    const notes = document.getElementById("notes").value;
-
-    if (room > 3493 || room < 1) {
-        alert("Room number must be between 1 and 3493.");
-        return;
+    function actualizarHorarios(place) {
+        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
+        let horarios;
+        switch (place) {
+            case "Hibachi":
+                horarios = ["6:00 PM", "7:15 PM", "8:30 PM", "9:45 PM"];
+                break;
+            case "El Patio":
+            case "Bluewater Grill":
+            case "Bordeaux":
+            case "Himitsu":
+            case "Olio":
+                horarios = ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"];
+                break;
+            default:
+                horarios = [];
+        }
+        horarios.forEach(horario => {
+            const option = document.createElement('option');
+            option.value = horario;
+            option.textContent = horario;
+            timeSelect.appendChild(option);
+        });
     }
-    
-    if (notes.length > 15) {
-        alert("Notes cannot exceed 15 characters.");
-        return;
+
+    function actualizarDisponibilidad() {
+        const date = dateInput.value;
+        const room = roomInput.value;
+        const place = placeSelect.value;
+        const time = timeSelect.value;
+
+        const reservasRef = ref(db, 'reservas/' + date + '/' + room);
+        onValue(reservasRef, (snapshot) => {
+            const reservas = snapshot.val();
+            const totalPax = reservas ? Object.values(reservas).reduce((sum, reserva) => sum + reserva.pax, 0) : 0;
+            const availablePax = 8 - totalPax; // Cambiar aquí la capacidad total
+
+            availablePaxDisplay.textContent = `Pax disponibles: ${availablePax}`;
+
+            if (time) {
+                const horasReservadas = Object.values(reservas).filter(reserva => reserva.hora === time).reduce((sum, reserva) => sum + reserva.pax, 0);
+                const availableForTime = 8 - horasReservadas; // Cambiar aquí la capacidad total
+                availablePaxDisplay.textContent += ` | Pax disponibles para ${time}: ${availableForTime}`;
+            }
+        });
     }
 
-    addReservation(parseInt(room), name, notes); // Añade la reserva
-    closeForm(); // Cierra el formulario
-}
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const reserva = {
+            fecha: dateInput.value,
+            habitacion: roomInput.value,
+            nombre: nameInput.value,
+            lugar: placeSelect.value,
+            hora: timeSelect.value,
+            pax: parseInt(paxInput.value),
+            notas: notesInput.value || "Sin notas"
+        };
 
-// Función para abrir el formulario
-function openForm() {
-    document.getElementById("reservationForm").style.display = "block";
-}
+        const reservasRef = ref(db, 'reservas/' + reserva.fecha + '/' + reserva.habitacion);
+        push(reservasRef, reserva);
 
-// Función para cerrar el formulario
-function closeForm() {
-    document.getElementById("reservationForm").style.display = "none";
-}
+        form.reset();
+        actualizarDisponibilidad();
+    });
 
-// Llama a la función sortReservations al cargar la página para ordenar las reservas
-window.onload = sortReservations;
+    onValue(ref(db, 'reservas'), (snapshot) => {
+        reservasList.innerHTML = '';
+        const reservasData = snapshot.val();
+        if (reservasData) {
+            Object.entries(reservasData).forEach(([fecha, habitaciones]) => {
+                Object.entries(habitaciones).forEach(([habitacion, reserva]) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${reserva.fecha}</td>
+                        <td>${reserva.habitacion}</td>
+                        <td>${reserva.nombre}</td>
+                        <td>${reserva.lugar}</td>
+                        <td>${reserva.hora}</td>
+                        <td>${reserva.pax}</td>
+                        <td>${reserva.notas}</td>
+                    `;
+                    tr.addEventListener('click', () => {
+                        mostrarDetallesReserva(reserva);
+                    });
+                    reservasList.appendChild(tr);
+                });
+            });
+        }
+    });
+
+    function mostrarDetallesReserva(reserva) {
+        modalBody.innerHTML = `
+            <p><strong>Fecha:</strong> ${reserva.fecha}</p>
+            <p><strong>Habitación:</strong> ${reserva.habitacion}</p>
+            <p><strong>Nombre:</strong> ${reserva.nombre}</p>
+            <p><strong>Lugar:</strong> ${reserva.lugar}</p>
+            <p><strong>Hora:</strong> ${reserva.hora}</p>
+            <p><strong>Pax:</strong> ${reserva.pax}</p>
+            <p><strong>Notas:</strong> ${reserva.notas}</p>
+        `;
+        $('#reservaModal').modal('show');
+    }
+
+    searchInput.addEventListener('input', () => {
+        const filter = searchInput.value.toLowerCase();
+        const rows = reservasList.getElementsByTagName('tr');
+        Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
+            row.style.display = match ? '' : 'none';
+        });
+    });
+
 </script>
-
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
