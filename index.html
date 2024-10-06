@@ -60,6 +60,56 @@
             font-weight: bold;
             color: green;
         }
+        /* Efecto hover en filas de tabla */
+.table-row:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s ease;
+}
+
+/* Efecto hover en botones */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #4CAF50;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Animación de pop-up del formulario */
+#reservationForm {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#reservationForm.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Efecto de enfoque en campos de formulario */
+input:focus, textarea:focus {
+  border: 2px solid #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* Desplazamiento suave en tabla */
+.table-container {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Botón flotante animado */
+#addButton {
+  transition: transform 0.3s ease;
+}
+
+#addButton:hover {
+  transform: scale(1.1);
+}
+
     </style>
 </head>
 <body>
