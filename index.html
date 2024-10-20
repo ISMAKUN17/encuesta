@@ -1,425 +1,1100 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservas de Restaurante</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-        .form-control {
-            max-width: 100%;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        tr {
-            cursor: pointer;
-        }
-        td, th {
-            text-align: center;
-            padding: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #f2f2f2;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-        @media (max-width: 767px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .table-responsive {
-            overflow-x: auto;
-        }
-        .available-pax {
-            font-weight: bold;
-            color: green;
-        }
-        /* Efecto hover en filas de tabla */
-.table-row:hover {
-  background-color: #f1f1f1;
-  transition: background-color 0.3s ease;
-}
+<html><head><base href="https://restaurant-reservations-app.com/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservas Gourmet</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #3a6ea5;
+    --secondary-color: #c0d6df;
+    --accent-color: #ff6b6b;
+    --background-color: #f6f6f6;
+    --text-color: #333;
+  }
 
-/* Efecto hover en botones */
-button {
-  transition: all 0.3s ease;
-}
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 14px;
+  }
 
-button:hover {
-  background-color: #4CAF50;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+  h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    letter-spacing: 1px;
+  }
 
-/* Animación de pop-up del formulario */
-#reservationForm {
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
-#reservationForm.show {
-  opacity: 1;
-  transform: scale(1);
-}
+  form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-/* Efecto de enfoque en campos de formulario */
-input:focus, textarea:focus {
-  border: 2px solid #4CAF50;
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  transition: all 0.3s ease;
-}
+  .form-group {
+    margin-bottom: 10px;
+  }
 
-/* Desplazamiento suave en tabla */
-.table-container {
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
+  label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.85em;
+  }
 
-/* Botón flotante animado */
-#addButton {
-  transition: transform 0.3s ease;
-}
+  input, select, textarea {
+    width: 100%;
+    padding: 6px;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+  }
 
-#addButton:hover {
-  transform: scale(1.1);
-}
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(58, 110, 165, 0.2);
+  }
 
-    </style>
+  button {
+    grid-column: 1 / -1;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  button:hover {
+    background-color: #2c5282;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: scale(0.7);
+    transition: all 0.3s ease;
+  }
+
+  .modal.show {
+    opacity: 1;
+  }
+
+  .modal.show .modal-content {
+    transform: scale(1);
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .dress-code {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .dress-code h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+  }
+
+  .error-message {
+    color: var(--accent-color);
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.2em;
+  }
+
+  #reservationDisplay {
+    margin-top: 40px;
+  }
+
+  .reservation-section {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+
+  .reservation-section h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    font-size: 1.2em;
+  }
+
+  .reservation-section table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .reservation-section th, .reservation-section td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--secondary-color);
+    font-size: 0.9em;
+  }
+
+  .reservation-section th {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .total-pax {
+    font-weight: 600;
+    color: var(--primary-color);
+    text-align: right;
+    margin-top: 10px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .form-group {
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+  }
+
+  .form-group:nth-child(1) { animation-delay: 0.1s; }
+  .form-group:nth-child(2) { animation-delay: 0.2s; }
+  .form-group:nth-child(3) { animation-delay: 0.3s; }
+  .form-group:nth-child(4) { animation-delay: 0.4s; }
+  .form-group:nth-child(5) { animation-delay: 0.5s; }
+  .form-group:nth-child(6) { animation-delay: 0.6s; }
+  
+  .form-group:nth-child(7) {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      font-size: 12px;
+    }
+
+    h1 {
+      font-size: 1.8em;
+    }
+
+    .container {
+      padding: 15px;
+    }
+
+    form {
+      padding: 20px;
+    }
+
+    input, select, textarea, button {
+      font-size: 0.9em;
+    }
+
+    .reservation-section {
+      padding: 10px;
+    }
+
+    .reservation-section th, .reservation-section td {
+      padding: 5px;
+      font-size: 0.9em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    body {
+      font-size: 11px;
+    }
+
+    h1 {
+      font-size: 1.6em;
+    }
+
+    form {
+      padding: 15px;
+    }
+
+    input, select, textarea, button {
+      font-size: 0.8em;
+    }
+  }
+
+  .corner-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+  }
+
+  .corner-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .corner-button:hover {
+    background-color: #2c5282;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .corner-button svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  #configModal, #reportModal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #configModal.show, #reportModal.show {
+    opacity: 1;
+  }
+
+  .config-section {
+    margin-bottom: 20px;
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .primary-button, .secondary-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .primary-button {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .secondary-button {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+  }
+
+  .primary-button:hover, .secondary-button:hover {
+    opacity: 0.9;
+  }
+
+  #reportContent {
+    margin-top: 20px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  #reportContent table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  #reportContent th, #reportContent td {
+    border: 1px solid var(--secondary-color);
+    padding: 8px;
+    text-align: left;
+  }
+
+  #reportContent th {
+    background-color: var(--secondary-color);
+    font-weight: bold;
+  }
+
+  #reportContent h3, #reportContent h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+  }
+  
+  #reportContent table th:nth-child(5),
+  #reportContent table td:nth-child(5) {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    #reportContent table th:nth-child(5),
+    #reportContent table td:nth-child(5) {
+      max-width: 60px;
+    }
+  }
+
+  @media print {
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3, h4 {
+      color: #3a6ea5;
+      margin-top: 20px;
+    }
+    h1 {
+      text-align: center;
+      border-bottom: 2px solid #3a6ea5;
+      padding-bottom: 10px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .restaurant-section {
+      margin-bottom: 30px;
+      page-break-inside: avoid;
+    }
+    .total-pax {
+      font-weight: bold;
+      text-align: right;
+      margin-top: 10px;
+    }
+    .no-print {
+      display: none;
+    }
+  }
+</style>
 </head>
 <body>
+  <div class="container">
+    <h1>Reservas Gourmet</h1>
+    <form id="reservationForm">
+      <div class="form-group">
+        <label for="date">Fecha:</label>
+        <input type="date" id="date" required>
+      </div>
 
-<div class="container">
-    <h1 class="text-center">Reservas VIP</h1>
-    
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Agregar Reserva</h5>
-            <form id="reservaForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" class="form-control" id="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="room">Room</label>
-                        <input type="number" class="form-control" id="room" min="1101" max="3493" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="place">Place</label>
-                        <select class="form-control" id="place" required>
-                            <option value="">Selecciona un lugar</option>
-                            <option value="El Patio">El Patio</option>
-                            <option value="Bluewater Grill">Bluewater Grill</option>
-                            <option value="Bordeaux">Bordeaux</option>
-                            <option value="Himitsu">Himitsu</option>
-                            <option value="Hibachi">Hibachi</option>
-                            <option value="Olio">Olio</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="time">Time</label>
-                        <select class="form-control" id="time" required>
-                            <option value="">Selecciona una hora</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="pax">Pax</label>
-                        <input type="number" class="form-control" id="pax" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea class="form-control" id="notes" rows="1" maxlength="15"></textarea>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary mt-3">Agregar Reserva</button>
-            </form>
-            <div class="mt-3">
-                <span class="available-pax" id="availablePax"></span>
-            </div>
-        </div>
+      <div class="form-group">
+        <label for="roomNumber">Número de Habitación:</label>
+        <input type="number" id="roomNumber" required>
+      </div>
+
+      <div class="form-group">
+        <label for="guestName">Nombre del Huésped:</label>
+        <input type="text" id="guestName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="restaurant">Restaurante:</label>
+        <select id="restaurant" required>
+          <option value="">Seleccione un restaurante</option>
+          <option value="Bordeaux">Bordeaux</option>
+          <option value="Himitsu">Himitsu</option>
+          <option value="Hibachi">Hibachi</option>
+          <option value="El Patio">El Patio</option>
+          <option value="Bluewater">Bluewater</option>
+          <option value="Olio">Olio</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="pax">Número de Personas:</label>
+        <input type="number" id="pax" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="time">Hora:</label>
+        <select id="time" required>
+          <option value="">Seleccione una hora</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notas:</label>
+        <textarea id="notes" rows="3" maxlength="15"></textarea>
+        <small>Máximo 15 caracteres</small>
+      </div>
+
+      <button type="submit">Hacer Reserva</button>
+    </form>
+
+    <h2>Reservas Actuales</h2>
+    <div id="reservationDisplay"></div>
+  </div>
+
+  <div class="corner-buttons">
+    <button id="configButton" class="corner-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+    <button id="reportButton" class="corner-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    </button>
+  </div>
+
+  <div id="confirmationModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Confirmación de Reserva</h2>
+      <div id="reservationDetails"></div>
+      <div id="dressCode" class="dress-code"></div>
     </div>
+  </div>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title d-flex justify-content-between align-items-center">
-                Reservas Hechas
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." style="width: 250px;">
-            </h5>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Room</th>
-                            <th>Name</th>
-                            <th>Place</th>
-                            <th>Time</th>
-                            <th>Pax</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reservasList">
-                        <!-- Aquí se agregarán las reservas -->
-                    </tbody>
-                </table>
-            </div>
+  <div id="configModal" class="modal">
+    <div class="modal-content">
+      <h2>Configuración</h2>
+      <div class="config-section">
+        <h3>Límites de PAX por Restaurante</h3>
+        <div id="restaurantLimits" class="grid-layout"></div>
+      </div>
+      <div class="config-section">
+        <h3>Otras Configuraciones</h3>
+        <div class="grid-layout">
+          <div>
+            <label for="defaultPaxLimit">Límite PAX predeterminado:</label>
+            <input type="number" id="defaultPaxLimit" min="1" value="8">
+          </div>
+          <div>
+            <label for="allowOverbooking">Permitir sobrerreservas:</label>
+            <input type="checkbox" id="allowOverbooking">
+          </div>
         </div>
+      </div>
+      <div class="button-group">
+        <button onclick="saveConfig()" class="primary-button">Guardar</button>
+        <button onclick="closeModal('configModal')" class="secondary-button">Cerrar</button>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Modal para mostrar información de la reserva -->
-<div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reservaModalLabel">Detalles de la Reserva</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Aquí se mostrará la información de la reserva -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            </div>
+  <div id="reportModal" class="modal">
+    <div class="modal-content">
+      <h2>Generar Reporte</h2>
+      <div class="grid-layout">
+        <div>
+          <label for="reportStartDate">Fecha de inicio:</label>
+          <input type="date" id="reportStartDate">
         </div>
+        <div>
+          <label for="reportEndDate">Fecha de fin:</label>
+          <input type="date" id="reportEndDate">
+        </div>
+        <div>
+          <label for="reportRestaurant">Restaurante (opcional):</label>
+          <select id="reportRestaurant">
+            <option value="">Todos los restaurantes</option>
+            <option value="Bordeaux">Bordeaux</option>
+            <option value="Himitsu">Himitsu</option>
+            <option value="Hibachi">Hibachi</option>
+            <option value="El Patio">El Patio</option>
+            <option value="Bluewater">Bluewater</option>
+            <option value="Olio">Olio</option>
+          </select>
+        </div>
+      </div>
+      <div class="button-group">
+        <button onclick="generateReport()" class="primary-button">Generar</button>
+        <button onclick="closeModal('reportModal')" class="secondary-button">Cerrar</button>
+      </div>
     </div>
-</div>
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+  </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyCR7ODl0gz3S9ca89-VxVJ1uZoVlSE0bgo",
-        authDomain: "vipreservas-6ed68.firebaseapp.com",
-        databaseURL: "https://vipreservas-6ed68-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "vipreservas-6ed68",
-        storageBucket: "vipreservas-6ed68.appspot.com",
-        messagingSenderId: "449237340285",
-        appId: "1:449237340285:web:8e7f8205bbb52d2821e114"
+      apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+      authDomain: "ismakun-bf0fa.firebaseapp.com",
+      databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+      projectId: "ismakun-bf0fa",
+      storageBucket: "ismakun-bf0fa.appspot.com",
+      messagingSenderId: "1028877703945",
+      appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    const form = document.getElementById('reservaForm');
-    const reservasList = document.getElementById('reservasList');
-    const modalBody = document.getElementById('modalBody');
-    const searchInput = document.getElementById('searchInput');
-    const placeSelect = document.getElementById('place');
+    let reservations = {};
+
+    const restaurantSelect = document.getElementById('restaurant');
     const timeSelect = document.getElementById('time');
-    const dateInput = document.getElementById('date');
-    const roomInput = document.getElementById('room');
-    const paxInput = document.getElementById('pax');
-    const availablePaxDisplay = document.getElementById('availablePax');
 
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
+    const regularHours = ['6:00 PM', '7:30 PM', '8:30 PM', '9:00 PM'];
+    const hibachiHours = ['6:00 PM', '7:15 PM', '8:30 PM', '9:45 PM'];
 
-    placeSelect.addEventListener('change', () => {
-        const selectedPlace = placeSelect.value;
-        actualizarHorarios(selectedPlace);
-        actualizarDisponibilidad();
-    });
+    const dressCodes = {
+      'Bluewater': 'Casual elegante – Zapatos tipo tenis o sandalias, camisas de vestir con manga corta o camisas tipo polo. No camisetas sin manga o sandalias de playa. Pantalón largo requerido para hombres o corto formal.',
+      'Bordeaux': 'Formal - Hombres deben usar pantalones (no shorts, bermudas) camisas de vestir y zapatos de vestir. Mujeres deben usar blusas, faldas, pantalón de vestir o vestidos, con zapatos de vestir.',
+      'El Patio': 'Casual elegante – Zapatos tipo tenis o sandalias, camisas de vestir con manga corta o camisas tipo polo. No camisetas sin manga o sandalias de playa. Pantalón largo requerido para hombres o corto formal.',
+      'Himitsu': 'Casual elegante – Zapatos tipo tenis o sandalias, camisas de vestir con manga corta o camisas tipo polo. No camisetas sin manga o sandalias de playa. Pantalón largo requerido para hombres o corto formal.',
+      'Hibachi': 'Casual elegante – Zapatos tipo tenis o sandalias, camisas de vestir con manga corta o camisas tipo polo. No camisetas sin manga o sandalias de playa. Pantalón largo requerido para hombres o corto formal.',
+      'Olio': 'Casual - Bermudas, pantalones largos o pantalones capri, tennis o sandalias Hombres: no está permitido utilizar playeras sin mangas. Mujeres: no está permitida la entrada en traje de baño al restaurante.'
+    };
 
-    timeSelect.addEventListener('change', actualizarDisponibilidad);
-    dateInput.addEventListener('change', actualizarDisponibilidad);
+    let restaurantLimits = {
+      'Bordeaux': 8,
+      'Himitsu': 8,
+      'Hibachi': 10,
+      'El Patio': 8,
+      'Bluewater': 8,
+      'Olio': 8
+    };
 
-    function actualizarHorarios(place) {
-        timeSelect.innerHTML = '<option value="">Selecciona una hora</option>';
-        let horarios;
-        switch (place) {
-            case "Hibachi":
-                horarios = ["6:00 PM", "7:15 PM", "8:30 PM", "9:45 PM"];
-                break;
-            case "El Patio":
-            case "Bluewater Grill":
-            case "Bordeaux":
-            case "Himitsu":
-            case "Olio":
-                horarios = ["6:00 PM", "7:30 PM", "8:30 PM", "9:45 PM"];
-                break;
-            default:
-                horarios = [];
-        }
-        horarios.forEach(horario => {
-            const option = document.createElement('option');
-            option.value = horario;
-            option.textContent = horario;
-            timeSelect.appendChild(option);
-        });
+    let config = {
+      defaultPaxLimit: 8,
+      allowOverbooking: false
+    };
+
+    function checkReservationAvailability(date, restaurant, time, pax) {
+      if (!reservations[date]) reservations[date] = {};
+      if (!reservations[date][restaurant]) reservations[date][restaurant] = {};
+      if (!reservations[date][restaurant][time]) reservations[date][restaurant][time] = [];
+
+      const currentPax = reservations[date][restaurant][time].reduce((sum, res) => sum + res.pax, 0);
+      const limit = restaurantLimits[restaurant] || config.defaultPaxLimit;
+      
+      if (config.allowOverbooking) {
+        return true;
+      }
+      
+      return (currentPax + pax) <= limit;
     }
 
- function actualizarDisponibilidad() {
-  const date = dateInput.value;
-  const place = placeSelect.value;
-  const time = timeSelect.value;
+    function updateReservationDisplay() {
+      const display = document.getElementById('reservationDisplay');
+      display.innerHTML = '';
 
-  if (date && place && time) {
-    const maxPax = place === "Hibachi" ? 10 : 8;
-    const totalPax = getTotalPax(date, place, time);
-    const availablePax = maxPax - totalPax;
+      database.ref('reservations').once('value', (snapshot) => {
+        reservations = {};
+        snapshot.forEach((childSnapshot) => {
+          const reservation = childSnapshot.val();
+          if (!reservations[reservation.date]) reservations[reservation.date] = {};
+          if (!reservations[reservation.date][reservation.restaurant]) reservations[reservation.date][reservation.restaurant] = {};
+          if (!reservations[reservation.date][reservation.restaurant][reservation.time]) reservations[reservation.date][reservation.restaurant][reservation.time] = [];
+          reservations[reservation.date][reservation.restaurant][reservation.time].push(reservation);
+        });
 
-    availablePaxDisplay.textContent = `Pax disponibles para ${place} a las ${time}: ${availablePax}`;
-  } else {
-    availablePaxDisplay.textContent = "";
-  }
-}
+        Object.keys(reservations).sort().forEach(date => {
+          Object.keys(reservations[date]).forEach(restaurant => {
+            const section = document.createElement('div');
+            section.className = 'reservation-section';
+            
+            const header = document.createElement('h3');
+            header.textContent = `${date} - ${restaurant}`;
+            section.appendChild(header);
 
-function getTotalPax(date, place, time) {
-  let totalPax = 0;
-  onValue(ref(db, 'reservas/'), (snapshot) => {
-    snapshot.forEach((childSnapshot) => {
-      const reserva = childSnapshot.val();
-      if (reserva.date === date && reserva.place === place && reserva.time === time) {
-        totalPax += reserva.pax;
+            const table = document.createElement('table');
+            table.innerHTML = `
+              <thead>
+                <tr>
+                  <th>Hora</th>
+                  <th>Habitación</th>
+                  <th>Huésped</th>
+                  <th>PAX</th>
+                  <th>Notas</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            `;
+
+            const tbody = table.querySelector('tbody');
+            let totalPax = 0;
+
+            Object.keys(reservations[date][restaurant]).sort().forEach(time => {
+              reservations[date][restaurant][time].forEach(res => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                  <td data-label="Hora">${res.time}</td>
+                  <td data-label="Habitación">${res.roomNumber}</td>
+                  <td data-label="Huésped">${res.guestName}</td>
+                  <td data-label="PAX">${res.pax}</td>
+                  <td data-label="Notas">${res.notes || '-'}</td>
+                `;
+                row.addEventListener('click', () => showReservationDetails(res, false));
+                row.style.cursor = 'pointer';
+                totalPax += res.pax;
+              });
+            });
+
+            section.appendChild(table);
+
+            const totalElement = document.createElement('p');
+            totalElement.className = 'total-pax';
+            totalElement.textContent = `Total PAX: ${totalPax}`;
+            section.appendChild(totalElement);
+
+            display.appendChild(section);
+          });
+        });
+      });
+    }
+
+    function showConfirmation(reservation) {
+      const modal = document.getElementById('confirmationModal');
+      const detailsDiv = document.getElementById('reservationDetails');
+      const dressCodeDiv = document.getElementById('dressCode');
+      
+      detailsDiv.innerHTML = `
+        <h3>Reserva Confirmada</h3>
+        <p><strong>Fecha:</strong> ${reservation.date}</p>
+        <p><strong>Número de Habitación:</strong> ${reservation.roomNumber}</p>
+        <p><strong>Nombre del Huésped:</strong> ${reservation.guestName}</p>
+        <p><strong>Restaurante:</strong> ${reservation.restaurant}</p>
+        <p><strong>Número de Personas:</strong> ${reservation.pax}</p>
+        <p><strong>Hora:</strong> ${reservation.time}</p>
+        <p><strong>Notas:</strong> ${reservation.notes || 'N/A'}</p>
+      `;
+
+      dressCodeDiv.innerHTML = `
+        <h3>Código de Vestimenta</h3>
+        <p>${dressCodes[reservation.restaurant]}</p>
+      `;
+
+      modal.style.display = "block";
+      setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function updateTimeOptions() {
+      timeSelect.innerHTML = '<option value="">Seleccione una hora</option>';
+      const hours = restaurantSelect.value === 'Hibachi' ? hibachiHours : regularHours;
+      hours.forEach(hour => {
+        const option = document.createElement('option');
+        option.value = hour;
+        option.textContent = hour;
+        timeSelect.appendChild(option);
+      });
+    }
+
+    restaurantSelect.addEventListener('change', updateTimeOptions);
+
+    document.getElementById('reservationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const reservation = {
+        date: document.getElementById('date').value,
+        roomNumber: document.getElementById('roomNumber').value,
+        guestName: document.getElementById('guestName').value,
+        restaurant: document.getElementById('restaurant').value,
+        pax: parseInt(document.getElementById('pax').value),
+        time: document.getElementById('time').value,
+        notes: document.getElementById('notes').value
+      };
+
+      if (checkReservationAvailability(reservation.date, reservation.restaurant, reservation.time, reservation.pax)) {
+        const newReservationRef = database.ref('reservations').push();
+        newReservationRef.set(reservation, (error) => {
+          if (error) {
+            showErrorMessage("Error saving reservation: " + error.message);
+          } else {
+            updateReservationDisplay();
+            showConfirmation(reservation);
+          }
+        });
+      } else {
+        showErrorMessage("Lo sentimos, no hay suficiente espacio disponible para esta reserva.");
       }
     });
-  });
-  return totalPax;
-}
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    function showReservationDetails(reservation, isNewReservation = false) {
+      const modal = document.getElementById('confirmationModal');
+      const detailsDiv = document.getElementById('reservationDetails');
+      const dressCodeDiv = document.getElementById('dressCode');
+      
+      detailsDiv.innerHTML = `
+        ${isNewReservation ? '<h3>Reserva Confirmada</h3>' : ''}
+        <p><strong>Fecha:</strong> ${reservation.date}</p>
+        <p><strong>Número de Habitación:</strong> ${reservation.roomNumber}</p>
+        <p><strong>Nombre del Huésped:</strong> ${reservation.guestName}</p>
+        <p><strong>Restaurante:</strong> ${reservation.restaurant}</p>
+        <p><strong>Número de Personas:</strong> ${reservation.pax}</p>
+        <p><strong>Hora:</strong> ${reservation.time}</p>
+        <p><strong>Notas:</strong> ${reservation.notes || 'N/A'}</p>
+      `;
 
-        const date = dateInput.value;
-        const room = roomInput.value;
-        const name = document.getElementById('name').value;
-        const place = placeSelect.value;
-        const time = timeSelect.value;
-        const pax = parseInt(paxInput.value);
-        const notes = document.getElementById('notes').value;
+      dressCodeDiv.innerHTML = `
+        <h3>Código de Vestimenta</h3>
+        <p>${dressCodes[reservation.restaurant]}</p>
+      `;
 
-        // Validar que el room sea un número entre 1101 y 3493
-        if (room < 1101 || room > 3493) {
-            alert("La habitacion ingresada no pertenece al Secrets Royal Beach.");
-            return;
-        }
-
-        // Validar el límite de pax según el lugar y horario
-        validarReservas(date, place, time, pax)
-            .then(valid => {
-                if (valid) {
-                    const reserva = { date, room, name, place, time, pax, notes };
-                    agregarReserva(reserva);
-                    form.reset(); // Reiniciar el formulario
-                    dateInput.value = today; // Resetear la fecha al día actual
-                    availablePaxDisplay.textContent = ""; // Limpiar mensaje de disponibilidad
-                } else {
-                    alert("Lo siento, ya no hay disponibilidad para esa reserva.");
-                }
-            });
-    });
-
-    function agregarReserva(reserva) {
-        push(ref(db, 'reservas/'), reserva);
-        alert("Tu reserva fue agregada correctamente!");
+      modal.style.display = "block";
+      setTimeout(() => modal.classList.add('show'), 10);
     }
 
-    async function validarReservas(date, place, time, pax) {
-        return new Promise((resolve) => {
-            onValue(ref(db, 'reservas/'), (snapshot) => {
-                let totalPax = 0;
-                snapshot.forEach((childSnapshot) => {
-                    const reserva = childSnapshot.val();
-                    if (reserva.date === date && reserva.place === place && reserva.time === time) {
-                        totalPax += reserva.pax;
-                    }
-                });
+    function showErrorMessage(message) {
+      const modal = document.getElementById('confirmationModal');
+      const detailsDiv = document.getElementById('reservationDetails');
+      const dressCodeDiv = document.getElementById('dressCode');
+      
+      detailsDiv.innerHTML = `<p class="error-message">${message}</p>`;
+      dressCodeDiv.innerHTML = '';
 
-                let maxPax = place === "Hibachi" ? 10 : 8; // 10 para Hibachi, 8 para los demás
-                resolve(totalPax + pax <= maxPax); // Verifica si la nueva reserva excede el límite
-            });
-        });
+      modal.style.display = "block";
+      setTimeout(() => modal.classList.add('show'), 10);
     }
 
-    onValue(ref(db, 'reservas/'), (snapshot) => {
-        reservasList.innerHTML = '';
-        snapshot.forEach((childSnapshot) => {
-            const reserva = childSnapshot.val();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${reserva.date}</td>
-                <td>${reserva.room}</td>
-                <td>${reserva.name}</td>
-                <td>${reserva.place}</td>
-                <td>${reserva.time}</td>
-                <td>${reserva.pax}</td>
-                <td>${reserva.notes || 'N/A'}</td>
-            `;
-            row.addEventListener('click', () => mostrarDetallesReserva(reserva));
-            reservasList.appendChild(row);
-        });
+    document.querySelector('.close').onclick = function() {
+      const modal = document.getElementById('confirmationModal');
+      modal.classList.remove('show');
+      setTimeout(() => modal.style.display = "none", 300);
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('confirmationModal');
+      if (event.target == modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = "none", 300);
+      }
+    }
+
+    const configButton = document.getElementById('configButton');
+    const reportButton = document.getElementById('reportButton');
+
+    configButton.addEventListener('click', () => {
+      populateConfigModal();
+      showModal('configModal');
     });
 
-    function mostrarDetallesReserva(reserva) {
-        modalBody.innerHTML = `
-            <p><strong>Date:</strong> ${reserva.date}</p>
-            <p><strong>Room:</strong> ${reserva.room}</p>
-            <p><strong>Name:</strong> ${reserva.name}</p>
-            <p><strong>Place:</strong> ${reserva.place}</p>
-            <p><strong>Time:</strong> ${reserva.time}</p>
-            <p><strong>Pax:</strong> ${reserva.pax}</p>
-            <p><strong>Notes:</strong> ${reserva.notes || 'N/A'}</p>
+    reportButton.addEventListener('click', () => {
+      showModal('reportModal');
+    });
+
+    function populateConfigModal() {
+      const limitsContainer = document.getElementById('restaurantLimits');
+      limitsContainer.innerHTML = '';
+      Object.keys(restaurantLimits).forEach(restaurant => {
+        limitsContainer.innerHTML += `
+          <div>
+            <label for="${restaurant}Limit">${restaurant}:</label>
+            <input type="number" id="${restaurant}Limit" min="1" value="${restaurantLimits[restaurant]}">
+          </div>
         `;
-        $('#reservaModal').modal('show');
+      });
+
+      document.getElementById('defaultPaxLimit').value = config.defaultPaxLimit;
+      document.getElementById('allowOverbooking').checked = config.allowOverbooking;
     }
 
-    searchInput.addEventListener('keyup', () => {
-        const filter = searchInput.value.toLowerCase();
-        const rows = reservasList.getElementsByTagName('tr');
+    function saveConfig() {
+      Object.keys(restaurantLimits).forEach(restaurant => {
+        restaurantLimits[restaurant] = parseInt(document.getElementById(`${restaurant}Limit`).value);
+      });
 
-        for (let i = 0; i < rows.length; i++) {
-            const cells = rows[i].getElementsByTagName('td');
-            let found = false;
+      config.defaultPaxLimit = parseInt(document.getElementById('defaultPaxLimit').value);
+      config.allowOverbooking = document.getElementById('allowOverbooking').checked;
 
-            for (let j = 0; j < cells.length; j++) {
-                if (cells[j]) {
-                    const textValue = cells[j].textContent || cells[j].innerText;
-                    if (textValue.toLowerCase().indexOf(filter) > -1) {
-                        found = true;
-                        break;
-                    }
-                }
+      closeModal('configModal');
+      alert('Configuración guardada');
+    }
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'block';
+      setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.remove('show');
+      setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        closeModal(event.target.id);
+      }
+    }
+
+    function generatePrintReportHTML(reservations) {
+      let reportHTML = '';
+      
+      Object.keys(reservations).sort().forEach(date => {
+        reportHTML += `<h2>${date}</h2>`;
+        Object.keys(reservations[date]).forEach(restaurant => {
+          reportHTML += `
+            <div class="restaurant-section">
+              <h3>${restaurant}</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hora</th>
+                    <th>Habitación</th>
+                    <th>Huésped</th>
+                    <th>PAX</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          let totalPax = 0;
+          Object.keys(reservations[date][restaurant]).sort().forEach(time => {
+            reservations[date][restaurant][time].forEach(res => {
+              reportHTML += `
+                <tr>
+                  <td>${res.time}</td>
+                  <td>${res.roomNumber}</td>
+                  <td>${res.guestName}</td>
+                  <td>${res.pax}</td>
+                  <td>${res.notes || '-'}</td>
+                </tr>
+              `;
+              totalPax += res.pax;
+            });
+          });
+          reportHTML += `
+                </tbody>
+              </table>
+              <p class="total-pax">Total PAX: ${totalPax}</p>
+            </div>
+          `;
+        });
+      });
+      
+      return reportHTML;
+    }
+
+    function generateReport() {
+      const startDate = document.getElementById('reportStartDate').value;
+      const endDate = document.getElementById('reportEndDate').value;
+      const selectedRestaurant = document.getElementById('reportRestaurant').value;
+      
+      if (!startDate || !endDate) {
+        alert('Por favor, seleccione fechas de inicio y fin.');
+        return;
+      }
+
+      database.ref('reservations').once('value', (snapshot) => {
+        let allReservations = {};
+        snapshot.forEach((childSnapshot) => {
+          const reservation = childSnapshot.val();
+          if (!allReservations[reservation.date]) allReservations[reservation.date] = {};
+          if (!allReservations[reservation.date][reservation.restaurant]) allReservations[reservation.date][reservation.restaurant] = {};
+          if (!allReservations[reservation.date][reservation.restaurant][reservation.time]) allReservations[reservation.date][reservation.restaurant][reservation.time] = [];
+          allReservations[reservation.date][reservation.restaurant][reservation.time].push(reservation);
+        });
+
+        let filteredReservations = Object.keys(allReservations)
+          .filter(date => date >= startDate && date <= endDate)
+          .reduce((obj, key) => {
+            obj[key] = allReservations[key];
+            return obj;
+          }, {});
+
+        if (selectedRestaurant) {
+          filteredReservations = Object.keys(filteredReservations).reduce((obj, date) => {
+            if (filteredReservations[date][selectedRestaurant]) {
+              obj[date] = { [selectedRestaurant]: filteredReservations[date][selectedRestaurant] };
             }
-            rows[i].style.display = found ? "" : "none";
+            return obj;
+          }, {});
         }
+
+        let reportHTML = `<h1>Reporte de Reservas</h1>
+          <p><strong>Período:</strong> ${startDate} - ${endDate}</p>
+          ${selectedRestaurant ? `<p><strong>Restaurante:</strong> ${selectedRestaurant}</p>` : ''}
+          ${generatePrintReportHTML(filteredReservations)}`;
+
+        const printButton = document.createElement('button');
+        printButton.textContent = 'Imprimir Reporte';
+        printButton.className = 'primary-button';
+        printButton.onclick = () => {
+          const printWindow = window.open('', '_blank');
+          printWindow.document.write(`
+            <html>
+              <head>
+                <title>Reporte de Reservas</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 20px;
+                  }
+                  h1, h2, h3, h4 {
+                    color: #3a6ea5;
+                    margin-top: 20px;
+                  }
+                  h1 {
+                    text-align: center;
+                    border-bottom: 2px solid #3a6ea5;
+                    padding-bottom: 10px;
+                  }
+                  table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin-bottom: 20px;
+                  }
+                  th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                  }
+                  th {
+                    background-color: #f2f2f2;
+                    font-weight: bold;
+                  }
+                  .restaurant-section {
+                    margin-bottom: 30px;
+                    page-break-inside: avoid;
+                  }
+                  .total-pax {
+                    font-weight: bold;
+                    text-align: right;
+                    margin-top: 10px;
+                  }
+                  @media print {
+                    body {
+                      font-size: 11pt;
+                    }
+                  }
+                </style>
+              </head>
+              <body>
+                ${reportHTML}
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+          printWindow.print();
+        };
+
+        const reportModal = document.getElementById('reportModal');
+        reportModal.querySelector('.modal-content').appendChild(printButton);
+        reportModal.querySelector('#reportContent').innerHTML = reportHTML;
+        showModal('reportModal');
+      });
+    }
+
+    updateTimeOptions();
+    updateReservationDisplay();
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        input.parentElement.classList.add('focus');
+      });
+      input.addEventListener('blur', () => {
+        input.parentElement.classList.remove('focus');
+      });
     });
   </script>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+</body></html>
