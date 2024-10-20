@@ -1,8 +1,10 @@
 <html><head><base href="https://restaurant-reservations-app.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reservas Gourmet</title>
+<title>Reservas VIP'S Secrets</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <style>
   :root {
     --primary-color: #3a6ea5;
@@ -27,25 +29,27 @@
     color: var(--primary-color);
     text-align: center;
     margin-bottom: 20px;
-    font-size: 1.8em;
+    font-size: 2.2em;
     letter-spacing: 1px;
   }
 
   .container {
-    max-width: 800px;
+    max-width: 900px;
+    min-width: 320px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
   }
 
   form {
     background-color: #fff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    max-width: 600px;
+    max-width: 700px;
+    width: 100%;
     margin: 0 auto;
   }
 
@@ -68,7 +72,7 @@
     border-radius: 8px;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    font-size: 0.85em;
+    font-size: 0.9em;
     transition: all 0.3s ease;
   }
 
@@ -86,7 +90,7 @@
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.85em;
+    font-size: 0.9em;
     font-weight: 600;
     transition: all 0.3s ease;
     text-transform: uppercase;
@@ -232,7 +236,7 @@
   .form-group:nth-child(4) { animation-delay: 0.4s; }
   .form-group:nth-child(5) { animation-delay: 0.5s; }
   .form-group:nth-child(6) { animation-delay: 0.6s; }
-  
+
   .form-group:nth-child(7) {
     grid-column: 1 / -1;
   }
@@ -268,13 +272,13 @@
     }
   }
 
-  @media (max-width: 480px) {
+  @media (min-width: 768px) {
     body {
-      font-size: 11px;
+      font-size: 14px;
     }
 
-    h1 {
-      font-size: 1.6em;
+    .container {
+      padding: 15px;
     }
 
     form {
@@ -282,7 +286,43 @@
     }
 
     input, select, textarea, button {
-      font-size: 0.8em;
+      font-size: 0.9em;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    body {
+      font-size: 16px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+    }
+
+    .container {
+      max-width: 1000px;
+    }
+
+    input, select, textarea, button {
+      font-size: 1em;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    body {
+      font-size: 18px;
+    }
+
+    h1 {
+      font-size: 2.8em;
+    }
+
+    .container {
+      max-width: 1100px;
+    }
+
+    input, select, textarea, button {
+      font-size: 1.1em;
     }
   }
 
@@ -410,7 +450,7 @@
     margin-bottom: 10px;
     color: var(--primary-color);
   }
-  
+
   #reportContent table th:nth-child(5),
   #reportContent table td:nth-child(5) {
     max-width: 100px;
@@ -475,7 +515,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Reservas VIP's Secrets</h1>
+    <h1>Reservas VIP'S Secrets</h1>
     <form id="reservationForm">
       <div class="form-group">
         <label for="date">Fecha:</label>
@@ -484,7 +524,7 @@
 
       <div class="form-group">
         <label for="roomNumber">Número de Habitación:</label>
-        <input type="number" id="roomNumber" required>
+        <input type="text" id="roomNumber" required pattern="\d{1,4}" maxlength="4" inputmode="numeric">
       </div>
 
       <div class="form-group">
@@ -556,6 +596,27 @@
         <div id="restaurantLimits" class="grid-layout"></div>
       </div>
       <div class="config-section">
+        <h3>Horarios de Restaurantes</h3>
+        <div id="restaurantHours" class="grid-layout">
+        </div>
+      </div>
+      <div class="config-section">
+        <h3>Agregar Nuevo Restaurante</h3>
+        <div class="grid-layout">
+          <div>
+            <label for="newRestaurantName">Nombre del Restaurante:</label>
+            <input type="text" id="newRestaurantName">
+          </div>
+          <div>
+            <label for="newRestaurantLimit">Límite de PAX:</label>
+            <input type="number" id="newRestaurantLimit" min="1" value="8">
+          </div>
+          <div>
+            <button onclick="addNewRestaurant()" class="primary-button">Agregar Restaurante</button>
+          </div>
+        </div>
+      </div>
+      <div class="config-section">
         <h3>Otras Configuraciones</h3>
         <div class="grid-layout">
           <div>
@@ -566,6 +627,11 @@
             <label for="allowOverbooking">Permitir sobrerreservas:</label>
             <input type="checkbox" id="allowOverbooking">
           </div>
+        </div>
+      </div>
+      <div class="config-section">
+        <h3>Cierres de Restaurantes</h3>
+        <div id="restaurantClosures" class="grid-layout">
         </div>
       </div>
       <div class="button-group">
@@ -607,8 +673,6 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
@@ -623,13 +687,20 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let reservations = {};
-
     const restaurantSelect = document.getElementById('restaurant');
     const timeSelect = document.getElementById('time');
 
     const regularHours = ['6:00 PM', '7:30 PM', '8:30 PM', '9:00 PM'];
     const hibachiHours = ['6:00 PM', '7:15 PM', '8:30 PM', '9:45 PM'];
+
+    let restaurantHours = {
+      'Bordeaux': regularHours,
+      'Himitsu': regularHours,
+      'Hibachi': hibachiHours,
+      'El Patio': regularHours,
+      'Bluewater': regularHours,
+      'Olio': regularHours
+    };
 
     const dressCodes = {
       'Bluewater': 'Casual elegante – Zapatos tipo tenis o sandalias, camisas de vestir con manga corta o camisas tipo polo. No camisetas sin manga o sandalias de playa. Pantalón largo requerido para hombres o corto formal.',
@@ -640,6 +711,7 @@
       'Olio': 'Casual - Bermudas, pantalones largos o pantalones capri, tennis o sandalias Hombres: no está permitido utilizar playeras sin mangas. Mujeres: no está permitida la entrada en traje de baño al restaurante.'
     };
 
+    let reservations = {};
     let restaurantLimits = {
       'Bordeaux': 8,
       'Himitsu': 8,
@@ -649,10 +721,42 @@
       'Olio': 8
     };
 
+    let restaurantClosures = {};
+
     let config = {
       defaultPaxLimit: 8,
       allowOverbooking: false
     };
+
+    function clearFormFields() {
+      document.getElementById('date').value = '';
+      document.getElementById('roomNumber').value = '';
+      document.getElementById('guestName').value = '';
+      document.getElementById('restaurant').value = '';
+      document.getElementById('pax').value = '';
+      document.getElementById('time').value = '';
+      document.getElementById('notes').value = '';
+    }
+
+    function saveReservation(reservation) {
+      const reservationRef = database.ref('reservations').push();
+      reservationRef.set(reservation);
+    }
+
+    function loadReservations() {
+      database.ref('reservations').on('value', (snapshot) => {
+        const data = snapshot.val();
+        reservations = {};
+        for (let key in data) {
+          const reservation = data[key];
+          if (!reservations[reservation.date]) reservations[reservation.date] = {};
+          if (!reservations[reservation.date][reservation.restaurant]) reservations[reservation.date][reservation.restaurant] = {};
+          if (!reservations[reservation.date][reservation.restaurant][reservation.time]) reservations[reservation.date][reservation.restaurant][reservation.time] = [];
+          reservations[reservation.date][reservation.restaurant][reservation.time].push(reservation);
+        }
+        updateReservationDisplay();
+      });
+    }
 
     function checkReservationAvailability(date, restaurant, time, pax) {
       if (!reservations[date]) reservations[date] = {};
@@ -669,71 +773,85 @@
       return (currentPax + pax) <= limit;
     }
 
+    function checkExistingReservation(date, roomNumber) {
+      if (reservations[date]) {
+        for (let restaurant in reservations[date]) {
+          for (let time in reservations[date][restaurant]) {
+            if (reservations[date][restaurant][time].some(res => res.roomNumber === roomNumber)) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    function showPopupMessage(message) {
+      const modal = document.getElementById('confirmationModal');
+      const detailsDiv = document.getElementById('reservationDetails');
+      const dressCodeDiv = document.getElementById('dressCode');
+      
+      detailsDiv.innerHTML = `<p class="error-message">${message}</p>`;
+      dressCodeDiv.innerHTML = '';
+
+      modal.style.display = "block";
+      setTimeout(() => modal.classList.add('show'), 10);
+    }
+
     function updateReservationDisplay() {
       const display = document.getElementById('reservationDisplay');
       display.innerHTML = '';
 
-      database.ref('reservations').once('value', (snapshot) => {
-        reservations = {};
-        snapshot.forEach((childSnapshot) => {
-          const reservation = childSnapshot.val();
-          if (!reservations[reservation.date]) reservations[reservation.date] = {};
-          if (!reservations[reservation.date][reservation.restaurant]) reservations[reservation.date][reservation.restaurant] = {};
-          if (!reservations[reservation.date][reservation.restaurant][reservation.time]) reservations[reservation.date][reservation.restaurant][reservation.time] = [];
-          reservations[reservation.date][reservation.restaurant][reservation.time].push(reservation);
-        });
+      Object.keys(reservations).sort().forEach(date => {
+        Object.keys(reservations[date]).forEach(restaurant => {
+          const section = document.createElement('div');
+          section.className = 'reservation-section';
+          
+          const header = document.createElement('h3');
+          header.textContent = `${date} - ${restaurant}`;
+          section.appendChild(header);
 
-        Object.keys(reservations).sort().forEach(date => {
-          Object.keys(reservations[date]).forEach(restaurant => {
-            const section = document.createElement('div');
-            section.className = 'reservation-section';
-            
-            const header = document.createElement('h3');
-            header.textContent = `${date} - ${restaurant}`;
-            section.appendChild(header);
+          const table = document.createElement('table');
+          table.innerHTML = `
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Habitación</th>
+                <th>Huésped</th>
+                <th>PAX</th>
+                <th>Notas</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          `;
 
-            const table = document.createElement('table');
-            table.innerHTML = `
-              <thead>
-                <tr>
-                  <th>Hora</th>
-                  <th>Habitación</th>
-                  <th>Huésped</th>
-                  <th>PAX</th>
-                  <th>Notas</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            `;
+          const tbody = table.querySelector('tbody');
+          let totalPax = 0;
 
-            const tbody = table.querySelector('tbody');
-            let totalPax = 0;
-
-            Object.keys(reservations[date][restaurant]).sort().forEach(time => {
-              reservations[date][restaurant][time].forEach(res => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                  <td data-label="Hora">${res.time}</td>
-                  <td data-label="Habitación">${res.roomNumber}</td>
-                  <td data-label="Huésped">${res.guestName}</td>
-                  <td data-label="PAX">${res.pax}</td>
-                  <td data-label="Notas">${res.notes || '-'}</td>
-                `;
-                row.addEventListener('click', () => showReservationDetails(res, false));
-                row.style.cursor = 'pointer';
-                totalPax += res.pax;
-              });
+          Object.keys(reservations[date][restaurant]).sort().forEach(time => {
+            reservations[date][restaurant][time].forEach(res => {
+              const row = tbody.insertRow();
+              row.innerHTML = `
+                <td data-label="Hora">${res.time}</td>
+                <td data-label="Habitación">${res.roomNumber}</td>
+                <td data-label="Huésped">${res.guestName}</td>
+                <td data-label="PAX">${res.pax}</td>
+                <td data-label="Notas">${res.notes || '-'}</td>
+              `;
+              row.addEventListener('click', () => showReservationDetails(res, false));
+              row.style.cursor = 'pointer';
+              totalPax += res.pax;
             });
-
-            section.appendChild(table);
-
-            const totalElement = document.createElement('p');
-            totalElement.className = 'total-pax';
-            totalElement.textContent = `Total PAX: ${totalPax}`;
-            section.appendChild(totalElement);
-
-            display.appendChild(section);
           });
+
+          section.appendChild(table);
+
+          const totalElement = document.createElement('p');
+          totalElement.className = 'total-pax';
+          totalElement.textContent = `Total PAX: ${totalPax}`;
+          section.appendChild(totalElement);
+
+          display.appendChild(section);
         });
       });
     }
@@ -765,7 +883,8 @@
 
     function updateTimeOptions() {
       timeSelect.innerHTML = '<option value="">Seleccione una hora</option>';
-      const hours = restaurantSelect.value === 'Hibachi' ? hibachiHours : regularHours;
+      const restaurant = restaurantSelect.value;
+      const hours = restaurantHours[restaurant] || regularHours;
       hours.forEach(hour => {
         const option = document.createElement('option');
         option.value = hour;
@@ -789,19 +908,38 @@
         notes: document.getElementById('notes').value
       };
 
+      if (isRestaurantClosed(reservation.date, reservation.restaurant)) {
+        showPopupMessage(`Lo sentimos, ${reservation.restaurant} está cerrado en la fecha seleccionada.`);
+        return;
+      }
+
+      if (checkExistingReservation(reservation.date, reservation.roomNumber)) {
+        showPopupMessage("Ya existe una reserva para esta habitación en la fecha seleccionada.");
+        return;
+      }
+
       if (checkReservationAvailability(reservation.date, reservation.restaurant, reservation.time, reservation.pax)) {
-        const newReservationRef = database.ref('reservations').push();
-        newReservationRef.set(reservation, (error) => {
-          if (error) {
-            showErrorMessage("Error saving reservation: " + error.message);
-          } else {
-            updateReservationDisplay();
-            showConfirmation(reservation);
-          }
-        });
+        saveReservation(reservation);
+        showConfirmation(reservation);
+        clearFormFields();
       } else {
         showErrorMessage("Lo sentimos, no hay suficiente espacio disponible para esta reserva.");
       }
+    });
+
+    const formInputs = document.querySelectorAll('#reservationForm input, #reservationForm select');
+    formInputs.forEach((input, index) => {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const nextInput = formInputs[index + 1];
+          if (nextInput) {
+            nextInput.focus();
+          } else {
+            document.querySelector('#reservationForm button[type="submit"]').click();
+          }
+        }
+      });
     });
 
     function showReservationDetails(reservation, isNewReservation = false) {
@@ -879,21 +1017,113 @@
         `;
       });
 
+      const hoursContainer = document.getElementById('restaurantHours');
+      hoursContainer.innerHTML = '';
+      Object.keys(restaurantHours).forEach(restaurant => {
+        hoursContainer.innerHTML += `
+          <div>
+            <label for="${restaurant}Hours">${restaurant}:</label>
+            <input type="text" id="${restaurant}Hours" value="${restaurantHours[restaurant].join(', ')}">
+          </div>
+        `;
+      });
+
       document.getElementById('defaultPaxLimit').value = config.defaultPaxLimit;
       document.getElementById('allowOverbooking').checked = config.allowOverbooking;
+
+      const closuresContainer = document.getElementById('restaurantClosures');
+      closuresContainer.innerHTML = '';
+      Object.keys(restaurantLimits).forEach(restaurant => {
+        closuresContainer.innerHTML += `
+          <div>
+            <label for="${restaurant}Closure">${restaurant}:</label>
+            <input type="date" id="${restaurant}Closure">
+          </div>
+        `;
+      });
+
+      Object.keys(restaurantClosures).forEach(date => {
+        restaurantClosures[date].forEach(restaurant => {
+          const input = document.getElementById(`${restaurant}Closure`);
+          if (input) input.value = date;
+        });
+      });
+    }
+
+    function addNewRestaurant() {
+      const name = document.getElementById('newRestaurantName').value;
+      const limit = parseInt(document.getElementById('newRestaurantLimit').value);
+      
+      if (name && limit) {
+        restaurantLimits[name] = limit;
+        restaurantHours[name] = regularHours;
+        
+        const restaurantSelect = document.getElementById('restaurant');
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        restaurantSelect.appendChild(option);
+        
+        document.getElementById('newRestaurantName').value = '';
+        document.getElementById('newRestaurantLimit').value = '8';
+        
+        populateConfigModal();
+        
+        alert(`Restaurante "${name}" agregado exitosamente.`);
+      } else {
+        alert('Por favor, ingrese un nombre y un límite válido para el nuevo restaurante.');
+      }
     }
 
     function saveConfig() {
-      Object.keys(restaurantLimits).forEach(restaurant => {
-        restaurantLimits[restaurant] = parseInt(document.getElementById(`${restaurant}Limit`).value);
-      });
-
-      config.defaultPaxLimit = parseInt(document.getElementById('defaultPaxLimit').value);
-      config.allowOverbooking = document.getElementById('allowOverbooking').checked;
-
+      const config = {
+        restaurantLimits,
+        restaurantHours,
+        defaultPaxLimit: parseInt(document.getElementById('defaultPaxLimit').value),
+        allowOverbooking: document.getElementById('allowOverbooking').checked,
+        restaurantClosures
+      };
+      
+      database.ref('config').set(config);
+      
+      updateTimeOptions();
       closeModal('configModal');
       alert('Configuración guardada');
     }
+
+    function loadConfig() {
+      database.ref('config').once('value').then((snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          restaurantLimits = data.restaurantLimits || {};
+          restaurantHours = data.restaurantHours || {};
+          config.defaultPaxLimit = data.defaultPaxLimit || 8;
+          config.allowOverbooking = data.allowOverbooking || false;
+          restaurantClosures = data.restaurantClosures || {};
+          
+          updateTimeOptions();
+          populateConfigModal();
+        }
+      });
+    }
+
+    function isRestaurantClosed(date, restaurant) {
+      return restaurantClosures[date] && restaurantClosures[date].includes(restaurant);
+    }
+
+    function updateRestaurantOptions() {
+      const dateInput = document.getElementById('date');
+      const restaurantSelect = document.getElementById('restaurant');
+      const selectedDate = dateInput.value;
+
+      Array.from(restaurantSelect.options).forEach(option => {
+        if (option.value) {
+          option.disabled = isRestaurantClosed(selectedDate, option.value);
+        }
+      });
+    }
+
+    document.getElementById('date').addEventListener('change', updateRestaurantOptions);
 
     function showModal(modalId) {
       const modal = document.getElementById(modalId);
@@ -905,12 +1135,6 @@
       const modal = document.getElementById(modalId);
       modal.classList.remove('show');
       setTimeout(() => modal.style.display = 'none', 300);
-    }
-
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        closeModal(event.target.id);
-      }
     }
 
     function generatePrintReportHTML(reservations) {
@@ -971,113 +1195,103 @@
         return;
       }
 
-      database.ref('reservations').once('value', (snapshot) => {
-        let allReservations = {};
-        snapshot.forEach((childSnapshot) => {
-          const reservation = childSnapshot.val();
-          if (!allReservations[reservation.date]) allReservations[reservation.date] = {};
-          if (!allReservations[reservation.date][reservation.restaurant]) allReservations[reservation.date][reservation.restaurant] = {};
-          if (!allReservations[reservation.date][reservation.restaurant][reservation.time]) allReservations[reservation.date][reservation.restaurant][reservation.time] = [];
-          allReservations[reservation.date][reservation.restaurant][reservation.time].push(reservation);
-        });
+      let filteredReservations = Object.keys(reservations)
+        .filter(date => date >= startDate && date <= endDate)
+        .reduce((obj, key) => {
+          obj[key] = reservations[key];
+          return obj;
+        }, {});
 
-        let filteredReservations = Object.keys(allReservations)
-          .filter(date => date >= startDate && date <= endDate)
-          .reduce((obj, key) => {
-            obj[key] = allReservations[key];
-            return obj;
-          }, {});
+      if (selectedRestaurant) {
+        filteredReservations = Object.keys(filteredReservations).reduce((obj, date) => {
+          if (filteredReservations[date][selectedRestaurant]) {
+            obj[date] = { [selectedRestaurant]: filteredReservations[date][selectedRestaurant] };
+          }
+          return obj;
+        }, {});
+      }
 
-        if (selectedRestaurant) {
-          filteredReservations = Object.keys(filteredReservations).reduce((obj, date) => {
-            if (filteredReservations[date][selectedRestaurant]) {
-              obj[date] = { [selectedRestaurant]: filteredReservations[date][selectedRestaurant] };
-            }
-            return obj;
-          }, {});
-        }
+      let reportHTML = `<h1>Reporte de Reservas</h1>
+        <p><strong>Período:</strong> ${startDate} - ${endDate}</p>
+        ${selectedRestaurant ? `<p><strong>Restaurante:</strong> ${selectedRestaurant}</p>` : ''}
+        ${generatePrintReportHTML(filteredReservations)}`;
 
-        let reportHTML = `<h1>Reporte de Reservas</h1>
-          <p><strong>Período:</strong> ${startDate} - ${endDate}</p>
-          ${selectedRestaurant ? `<p><strong>Restaurante:</strong> ${selectedRestaurant}</p>` : ''}
-          ${generatePrintReportHTML(filteredReservations)}`;
-
-        const printButton = document.createElement('button');
-        printButton.textContent = 'Imprimir Reporte';
-        printButton.className = 'primary-button';
-        printButton.onclick = () => {
-          const printWindow = window.open('', '_blank');
-          printWindow.document.write(`
-            <html>
-              <head>
-                <title>Reporte de Reservas</title>
-                <style>
+      const printButton = document.createElement('button');
+      printButton.textContent = 'Imprimir Reporte';
+      printButton.className = 'primary-button';
+      printButton.onclick = () => {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Reporte de Reservas</title>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  line-height: 1.6;
+                  color: #333;
+                  max-width: 800px;
+                  margin: 0 auto;
+                  padding: 20px;
+                }
+                h1, h2, h3, h4 {
+                  color: #3a6ea5;
+                  margin-top: 20px;
+                }
+                h1 {
+                  text-align: center;
+                  border-bottom: 2px solid #3a6ea5;
+                  padding-bottom: 10px;
+                }
+                table {
+                  border-collapse: collapse;
+                  width: 100%;
+                  margin-bottom: 20px;
+                }
+                th, td {
+                  border: 1px solid #ddd;
+                  padding: 8px;
+                  text-align: left;
+                }
+                th {
+                  background-color: #f2f2f2;
+                  font-weight: bold;
+                }
+                .restaurant-section {
+                  margin-bottom: 30px;
+                  page-break-inside: avoid;
+                }
+                .total-pax {
+                  font-weight: bold;
+                  text-align: right;
+                  margin-top: 10px;
+                }
+                @media print {
                   body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 20px;
+                    font-size: 11pt;
                   }
-                  h1, h2, h3, h4 {
-                    color: #3a6ea5;
-                    margin-top: 20px;
-                  }
-                  h1 {
-                    text-align: center;
-                    border-bottom: 2px solid #3a6ea5;
-                    padding-bottom: 10px;
-                  }
-                  table {
-                    border-collapse: collapse;
-                    width: 100%;
-                    margin-bottom: 20px;
-                  }
-                  th, td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
-                  }
-                  th {
-                    background-color: #f2f2f2;
-                    font-weight: bold;
-                  }
-                  .restaurant-section {
-                    margin-bottom: 30px;
-                    page-break-inside: avoid;
-                  }
-                  .total-pax {
-                    font-weight: bold;
-                    text-align: right;
-                    margin-top: 10px;
-                  }
-                  @media print {
-                    body {
-                      font-size: 11pt;
-                    }
-                  }
-                </style>
-              </head>
-              <body>
-                ${reportHTML}
-              </body>
-            </html>
-          `);
-          printWindow.document.close();
-          printWindow.print();
-        };
+                }
+              </style>
+            </head>
+            <body>
+              ${reportHTML}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+      };
 
-        const reportModal = document.getElementById('reportModal');
-        reportModal.querySelector('.modal-content').appendChild(printButton);
-        reportModal.querySelector('#reportContent').innerHTML = reportHTML;
-        showModal('reportModal');
-      });
+      const reportModal = document.getElementById('reportModal');
+      reportModal.querySelector('.modal-content').appendChild(printButton);
+      reportModal.querySelector('#reportContent').innerHTML = reportHTML;
+      showModal('reportModal');
     }
 
     updateTimeOptions();
-    updateReservationDisplay();
-
+    loadReservations();
+    loadConfig();
+    
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -1096,5 +1310,12 @@
         input.parentElement.classList.remove('focus');
       });
     });
+
+    document.getElementById('roomNumber').addEventListener('input', function(e) {
+      this.value = this.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    updateTimeOptions();
+    updateRestaurantOptions();
   </script>
 </body></html>
