@@ -1,3 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Satisfaction Survey</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin-bottom: 20px; }
+        label { display: block; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h2>VIP Satisfaction Survey</h2>
+    <form id="surveyForm">
+        <div class="section">
+            <h3>Facilities</h3>
+            <label>How would you rate the VIP LOUNGE services?</label>
+            <select name="vipLoungeService">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>How do you consider the cleaning of the VIP LOUNGE?</label>
+            <select name="vipLoungeCleaning">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>How do you consider the maintenance of the VIP LOUNGE?</label>
+            <select name="vipLoungeMaintenance">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>How would you rate the food and beverages quality in the VIP LOUNGE?</label>
+            <select name="vipLoungeFoodQuality">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>How would you rate the cleaning in your room?</label>
+            <select name="roomCleaning">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>Did you receive the night coverage service?</label>
+            <select name="nightCoverage">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+            
+            <label>How do you consider the turndown?</label>
+            <select name="turndown">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+        </div>
+        
+        <div class="section">
+            <h3>Concierge VIP</h3>
+            <label>How was the attention during your check-in/out process?</label>
+            <select name="checkinCheckout">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>Did the concierge provide you with the information you required?</label>
+            <select name="conciergeInfo">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+        </div>
+        
+        <div class="section">
+            <h3>Butler Service</h3>
+            <label>How do you consider the butler's attitude?</label>
+            <select name="butlerAttitude">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>Did the butler offer help and support given to your needs?</label>
+            <select name="butlerHelp">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>Did the butler handle your requirements promptly?</label>
+            <select name="butlerPromptness">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+            
+            <label>Did the butler offer suggestions to improve your Live Aqua experience?</label>
+            <select name="butlerSuggestions">
+                <option>Very good</option>
+                <option>Good</option>
+                <option>Poor</option>
+                <option>Very poor</option>
+            </select>
+        </div>
+        
+        <div class="section">
+            <label>Share your comments with us:</label>
+            <textarea name="comments" rows="4" cols="50"></textarea>
+        </div>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        document.getElementById('surveyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            let surveyData = {};
+            formData.forEach((value, key) => surveyData[key] = value);
+            
+            db.ref('surveys').push(surveyData).then(() => {
+                alert('Survey submitted successfully!');
+                event.target.reset();
+            }).catch(error => console.error(error));
+        });
+    </script>
+</body>
+</html>
 <html><head><base href="https://restaurant-reservations-app.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
